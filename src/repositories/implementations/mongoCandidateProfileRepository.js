@@ -65,6 +65,7 @@ _getProfileAggregationPipeline(userId) {
         portfolioUrl: 1,
         highestEducation: 1,
         resumeFile: 1,
+        resumeFileNoPI: 1,
         resumeScore: 1,
         createdAt: 1,
         updatedAt: 1,
