@@ -44,6 +44,7 @@ class MongoCandidateProfileRepository extends ICandidateProfileRepository {
           portfolioUrl: 1,
           highestEducation: 1,
           resumeFile: 1,
+          resumeFileNoPI: 1,
           resumeScore: 1,
 
           // ⭐ MOST IMPORTANT PART
@@ -147,11 +148,16 @@ class MongoCandidateProfileRepository extends ICandidateProfileRepository {
     }
   }
 
-  async uploadResume(userId, resumeFile, resumeScore) {
+  async uploadResume(userId, resumeFile, resumeFileNoPI, resumeScore) {
     try {
+      const updateData = { resumeFile, resumeScore };
+      if (resumeFileNoPI !== undefined) {
+        updateData.resumeFileNoPI = resumeFileNoPI;
+      }
+
       await CandidateProfile.findOneAndUpdate(
         { userId },
-        { resumeFile, resumeScore }
+        updateData
       );
 
       const [profile] = await CandidateProfile.aggregate(
@@ -168,7 +174,7 @@ class MongoCandidateProfileRepository extends ICandidateProfileRepository {
     try {
       await CandidateProfile.findOneAndUpdate(
         { userId },
-        { $unset: { resumeFile: 1, resumeScore: 1 } }
+        { $unset: { resumeFile: 1, resumeFileNoPI: 1, resumeScore: 1 } }
       );
 
       const [profile] = await CandidateProfile.aggregate(

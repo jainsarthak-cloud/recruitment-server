@@ -4,13 +4,11 @@ import { AppError } from "../utils/errors.js";
 import jwt from "jsonwebtoken";
 import config from "../config/environment.js";
 import bcrypt from "bcryptjs";
-<<<<<<< HEAD
 import { sendVerificationEmail } from "./sendMail.js";
 import logger from "../utils/logger.js";
 import { emailQueue } from "../queues/emailQueue.js";
-=======
+
 import User from "../models/user.model.js";
->>>>>>> 70a6f30 (update)
 
 const { JWT_SECRET, REFRESH_SECRET, REFRESH_EXPIRES_IN } = config;
 

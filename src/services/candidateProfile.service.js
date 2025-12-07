@@ -195,7 +195,7 @@ async addSkills(userId, skillNames) {
 }
 
 
-  async uploadResume(userId, resumeFile, resumeScore) {
+  async uploadResume(userId, resumeFile, resumeFileNoPI, resumeScore) {
     const profile = await this.candidateProfileRepository.findProfileByUserId(
       userId
     );
@@ -206,6 +206,7 @@ async addSkills(userId, skillNames) {
     return await this.candidateProfileRepository.uploadResume(
       userId,
       resumeFile,
+      resumeFileNoPI,
       resumeScore
     );
   }
