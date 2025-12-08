@@ -102,6 +102,8 @@ async updateUserRole(req, res, next) {
 
 
 
+
+
   async getAllUsers(req, res, next) {
     try {
       const users = await this.userService.getAllUsers();
@@ -120,7 +122,6 @@ async updateUserRole(req, res, next) {
       const userId = req.params.id;
 
       console.log("Deleting user:", userId);
-    console.log("Deleting user:", userId); // ✅ log userId
 
       const deleted = await this.userService.deleteUser(userId);
 
@@ -135,14 +136,6 @@ async updateUserRole(req, res, next) {
         .status(500)
         .json({ success: false, message: "Server error", error: err.message });
     }
-    console.log("Deleted user:", deleted); // ✅ log result
-    return res.status(200).json({
-      success: true,
-      message: "User deleted successfully",
-    });
-  } catch (err) {
-    console.error("Delete user error:", err); // ✅ log full error
-    return res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 }
 
