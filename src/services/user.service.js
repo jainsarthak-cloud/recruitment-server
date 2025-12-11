@@ -218,6 +218,7 @@ class UserService {
       email: safeUser.email,
       firstName: safeUser.firstName,
       lastName: safeUser.lastName,
+      phoneNumber: safeUser.phoneNumber,
       role: safeUser?.role?.name,
       isVerified: safeUser?.isVerified,
     };
