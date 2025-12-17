@@ -14,37 +14,94 @@ class TestAttemptsController {
     this.testService = new TestService();
   }
 
-  async startTest(req, res, next) {
-    try {
-      const { testId } = req.body;
-      const email = req.user.email;
+  // async startTest(req, res, next) {
+  //   try {
+  //     const { testId } = req.body;
+  //     const email = req.user.email;
 
-      const testSummary = await this.testService.getTestById(testId);
+  //     const testSummary = await this.testService.getTestById(testId);
 
-      const data = {
-        title: testSummary.title,
-        summury: testSummary.summury,
-        showResults: testSummary.showResults,
-        category: testSummary.category,
-        status: testSummary.status,
-        duration: testSummary.duration,
-        passingScore: testSummary.passingScore,
-        prompt: testSummary.prompt,
-      };
+  //     const data = {
+  //       title: testSummary.title,
+  //       summury: testSummary.summury,
+  //       showResults: testSummary.showResults,
+  //       category: testSummary.category,
+  //       status: testSummary.status,
+  //       duration: testSummary.duration,
+  //       passingScore: testSummary.passingScore,
+  //       prompt: testSummary.prompt,
+  //     };
 
-      const resfromAI = await testGenerator({ prompt: data });
+  //     const resfromAI = await testGenerator({ prompt: data });
 
-      const attempt = await this.testAttemptsService.startTest(testId, email);
+  //     const attempt = await this.testAttemptsService.startTest(testId, email);
 
-      return res.status(201).json({
-        success: true,
-        data: attempt,
-        questions: resfromAI,
-      });
-    } catch (error) {
-      next(error);
-    }
+  //     return res.status(201).json({
+  //       success: true,
+  //       data: attempt,
+  //       questions: resfromAI,
+  //     });
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
+
+
+
+
+
+
+
+async startTest(req, res, next) {
+  try {
+    const { testId } = req.body;
+    const email = req.user.email;
+
+    // 1️⃣ Fetch test config
+    const testSummary = await this.testService.getTestById(testId);
+
+    const testConfig = {
+      title: testSummary.title,
+      summury: testSummary.summury,
+      showResults: testSummary.showResults,
+      category: testSummary.category,
+      status: testSummary.status,
+      duration: testSummary.duration,
+      passingScore: testSummary.passingScore,
+      prompt: testSummary.prompt,
+    };
+
+    // 2️⃣ Generate questions from AI (already normalized)
+    const aiResult = await testGenerator(testConfig);
+    /**
+     * aiResult = {
+     *   questions: [],
+     *   duration: number,
+     *   passingScore: number
+     * }
+     */
+
+    // 3️⃣ Create attempt
+    const attempt = await this.testAttemptsService.startTest(testId, email);
+
+    // 4️⃣ EXACT RESPONSE SHAPE (CLIENT SAFE)
+    return res.status(201).json({
+      success: true,
+      data: attempt,
+      questions: {
+        test: {
+          questions: aiResult.questions,
+          duration: aiResult.duration,
+          passingScore: aiResult.passingScore,
+        },
+      },
+    });
+  } catch (error) {
+    next(error);
   }
+}
+
+
 
   async submitTest(req, res, next) {
     try {

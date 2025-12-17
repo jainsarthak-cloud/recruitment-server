@@ -54,7 +54,13 @@ export async function generateQuestion(req, res) {
         
         const response = {
             success: true,
-            questions: result.questionsData || result
+            questions: {
+                test: {
+                    questions: result.questionsData || result,
+                    duration: 45,
+                    passingScore: 60
+                }
+            }
         };
 
         if (req.file) {
