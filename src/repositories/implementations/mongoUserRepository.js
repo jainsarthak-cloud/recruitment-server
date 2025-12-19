@@ -74,9 +74,93 @@ class MongoUserRepository extends IUserRepository {
     }
   }
 
-async findAllUsers() {
+ 
+
+// async findAllUsers(query) {
+//   try {
+//     const pipeline = [];
+//   // SEARCH FILTER
+//       if (query) {
+//         pipeline.push({
+//           $match: {
+//             $or: [
+//               { firstName: { $regex: query, $options: "i" } },
+//               { lastName: { $regex: query, $options: "i" } },
+//               { email: { $regex: query, $options: "i" } },
+//             ],
+//           },
+//         });
+//       }
+// // role lookup
+//       pipeline.push(
+//       {
+//         $lookup: {
+//           from: "roles",
+//           localField: "roleId",
+//           foreignField: "_id",
+//           as: "role",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$role",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $project: {
+//           _id: 1,
+//           email: 1,
+//           firstName: 1,
+//           lastName: 1,
+//           phoneNumber: 1,
+//           googleId: 1,
+//           role: {
+//             _id: "$role._id",
+//             name: "$role.name",
+//             description: "$role.description",
+//           },
+//         },
+//       }
+//     );
+
+//     return await User.aggregate(pipeline);
+//   } catch (error) {
+//     throw new AppError("Failed to fetch all users with roles", 500, error);
+//   }
+// }
+
+async findAllUsers(query) {
   try {
-    const users = await User.aggregate([
+    console.log("Repository query:", query);
+
+    const pipeline = [];
+
+    if (query) {
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      if (query.includes("@")) {
+        pipeline.push({
+          $match: {
+            email: { $regex: `^${escaped}$`, $options: "i" },
+          },
+        });
+      } else {
+        pipeline.push({
+          $match: {
+            $or: [
+              { firstName: { $regex: escaped, $options: "i" } },
+              { lastName: { $regex: escaped, $options: "i" } },
+              { email: { $regex: escaped, $options: "i" } },
+            ],
+          },
+        });
+      }
+    }
+
+    console.log("Mongo pipeline:", JSON.stringify(pipeline, null, 2));
+
+    pipeline.push(
       {
         $lookup: {
           from: "roles",
@@ -85,12 +169,7 @@ async findAllUsers() {
           as: "role",
         },
       },
-      {
-        $unwind: {
-          path: "$role",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+      { $unwind: { path: "$role", preserveNullAndEmptyArrays: true } },
       {
         $project: {
           _id: 1,
@@ -98,21 +177,21 @@ async findAllUsers() {
           firstName: 1,
           lastName: 1,
           phoneNumber: 1,
-          googleId: 1,
           role: {
             _id: "$role._id",
             name: "$role.name",
             description: "$role.description",
           },
         },
-      },
-    ]);
+      }
+    );
 
-    return users;
+    return await User.aggregate(pipeline);
   } catch (error) {
-    throw new AppError("Failed to fetch all users with roles", 500, error);
+    throw new AppError("Failed to fetch users", 500, error);
   }
 }
+
 
 
 async findUserById(id) {

@@ -98,11 +98,11 @@ async updateUserRole(req, res, next) {
   }
 }
 
-
-
   async getAllUsers(req, res, next) {
     try {
-      const users = await this.userService.getAllUsers();
+      const { query } = req.query;
+      // console.log("Controller query:", query);
+      const users = await this.userService.getAllUsers(query);
 
       return res.status(200).json({
         success: true,

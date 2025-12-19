@@ -285,8 +285,9 @@ class UserService {
     return safeUser;
   }
 
-  async getAllUsers() {
-  const users = await this.userRepository.findAllUsers();
+  async getAllUsers(query) {
+    console.log("Service query:", query);
+  const users = await this.userRepository.findAllUsers(query);
   return users;
 }
 
