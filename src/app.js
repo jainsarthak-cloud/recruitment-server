@@ -22,6 +22,7 @@ import testAttemptRoutes from "./routes/testAttempts.routes.js";
 import awsRouter from './routes/aws.route.js'
 import resendMailRoutes from "./routes/resendMail.routes.js";
 import { sendWelcomeEmail } from "./services/sendMail.js";
+import productRoutes from "./routes/product.routes.js"
 
 const app = express();
 app.set("trust proxy", 1);  
@@ -44,12 +45,14 @@ app.use("/api/test-attempts", testAttemptRoutes);
 app.use('/api/candidate-profile', candidateProfileRoutes);
 app.use('/api/aws' , awsRouter)
 app.use("/api/auth", resendMailRoutes);
+app.use("/api/product", productRoutes);
 // await sendWelcomeEmail({
 //   to: "agr.rbih@gmail.com",
 //   name: "Rohan",
 //   jobTitle: "Frontend Developer",
 //   appliedAt: new Date()
 // });
+
 
 app.use(errorHandler);
 export default app;
