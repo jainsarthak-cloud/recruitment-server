@@ -17,4 +17,10 @@ router.put("/:id", authenticateJWT, authorize("admin"), roleController.updateRol
 router.delete("/:id", authenticateJWT, authorize("admin"), roleController.deleteRole);
 router.get("/:id/permissions", authenticateJWT, authorize("admin"), roleController.getRoleWithPermissions);
 
+
+// my code 
+
+router.get("/roles", roleController.getRolesByFilter);
+
+
 export default router;

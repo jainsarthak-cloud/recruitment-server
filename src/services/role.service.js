@@ -48,7 +48,7 @@ class RoleService {
     const role = await this.roleRepository.deleteRole(id);
     if (!role) {
       throw new AppError("Role not found", 404);
-    }
+    } 
     return role;
   }
 
@@ -60,6 +60,27 @@ class RoleService {
     }
     return result[0]; // only return first object instead of whole array
   }
+
+
+
+  
+async getRolesByFilter(name) {
+  const filter = {};
+
+  if (name) {
+    filter.name = { $regex: `^${name}$`, $options: "i" };
+  }
+
+  return Role.find(filter);
 }
+}
+
+
+// my code 
+
+
+
+
+
 
 export default RoleService;

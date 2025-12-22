@@ -58,6 +58,41 @@ class RoleController {
       next(error);
     }
   };
+// my code 
+
+  getRolesByFilter = async (req, res, next) => {
+  try {
+    const { name } = req.query;
+
+    let roles;
+
+    if (name) {
+      roles = await this.roleService.getRolesByFilter(name);
+    } else {
+      roles = await this.roleService.getAllRoles();
+    }
+
+
+   
+
+
+    res.status(200).json({
+      success: true,
+      data: roles,
+      message: "Roles fetched successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 }
+
+
+
+
+
+
+
+
 
 export default new RoleController();

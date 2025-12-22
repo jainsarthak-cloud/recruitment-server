@@ -12,6 +12,9 @@ router.patch("/me", authenticateJWT, updateUserValidator, userController.updateM
 
 // Admin routes
 router.get("/allUser", authenticateJWT, authorize("admin"), userController.getAllUsers);
+// Common aliases for frontend compatibility
+router.get("/", authenticateJWT, authorize("admin"), userController.getAllUsers);
+router.get("/all", authenticateJWT, authorize("admin"), userController.getAllUsers);
 
 router.put(
   "/:id/role",

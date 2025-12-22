@@ -368,15 +368,15 @@ async updateUserRole(userId, newRoleId) {
   // 1️⃣ Update the role
   await this.userRepository.updateUser(userId, { roleId: newRoleId });
 
-  // 2️⃣ Fetch updated user with populated roleId
-  const updatedUser = await this.userRepository.findUserById(userId, true); 
-  // Pass `true` to populate roleId in repository
+  // 2️⃣ Fetch updated user with populated role (use repository helper that can populate roleId)
+  const updatedUser = await this.userRepository.getUserById(userId, true);
 
   if (!updatedUser) {
     throw new AppError("User not found", 404);
   }
 
-  // 3️⃣ Create safe payload including role
+  // 3️⃣ Create safe payload including role (support either `roleId` or `role` depending on repo method)
+  const roleSource = updatedUser.roleId || updatedUser.role;
   const safeUser = {
     _id: updatedUser._id,
     email: updatedUser.email,
@@ -384,9 +384,7 @@ async updateUserRole(userId, newRoleId) {
     lastName: updatedUser.lastName,
     phoneNumber: updatedUser.phoneNumber,
     isVerified: updatedUser.isVerified,
-    role: updatedUser.roleId
-      ? { _id: updatedUser.roleId._id, name: updatedUser.roleId.name }
-      : null,
+    role: roleSource ? { _id: roleSource._id, name: roleSource.name } : null,
   };
 
   // 4️⃣ Update cache
@@ -402,9 +400,45 @@ async updateUserRole(userId, newRoleId) {
     3600
   );
 
+
+
+
+
+
   return safeUser;
 }
 
+
+// both the functions are added by me 
+
+  // src/services/user.service.js
+
+  async getUsersWithNoRole() {
+    console.debug('[UserService] getUsersWithNoRole called');
+    try {
+      const users = await this.userRepository.findUsersWithNoRole();
+      console.debug('[UserService] getUsersWithNoRole -> result count:', Array.isArray(users) ? users.length : 0);
+      return users;
+    } catch (err) {
+      console.error('[UserService] getUsersWithNoRole error:', err);
+      throw err;
+    }
+  }
+
+async getUsersByRole(roleName) {
+  // No role users
+  if (roleName === "No role") {
+    return await this.getUsersWithNoRole();
+  }
+
+  // All users
+  if (!roleName || roleName === "all") {
+    return await this.userRepository.findAllUsers();
+  }
+
+  // Role based users (admin/client/etc)
+  return await this.userRepository.findUsersByRoleName(roleName);
+}
 
 
 

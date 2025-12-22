@@ -100,19 +100,54 @@ async updateUserRole(req, res, next) {
 
 
 
-  async getAllUsers(req, res, next) {
-    try {
-      const users = await this.userService.getAllUsers();
+  // async getAllUsers(req, res, next) {
+  //   try {
+  //     const users = await this.userService.getAllUsers();
 
-      return res.status(200).json({
-        success: true,
-        data: users,
-        message: "Users fetched successfully",
-      });
-    } catch (err) {
-      next(err);
+  //     return res.status(200).json({
+  //       success: true,
+  //       data: users,
+  //       message: "Users fetched successfully",
+  //     });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
+
+  // src/controllers/user.controller.js
+
+// i added this function
+  async getAllUsers(req, res, next) {
+  try {
+    const { role, noRole } = req.query;
+
+    console.debug('[UserController] getAllUsers called with query:', { role, noRole });
+
+    let users;
+
+    if (noRole === "true") {
+      users = await this.userService.getUsersWithNoRole();
+    } 
+    else if (role) {
+      users = await this.userService.getUsersByRole(role);
+    } 
+    else {
+      users = await this.userService.getAllUsers();
     }
+
+    console.debug('[UserController] getAllUsers -> fetched users count:', Array.isArray(users) ? users.length : (users ? 1 : 0));
+
+    return res.status(200).json({
+      success: true,
+      data: users,
+      message: "Users fetched successfully",
+    });
+  } catch (err) {
+    console.error('[UserController] getAllUsers error:', err);
+    next(err);
   }
+}
+
   async deleteUser(req, res, next) {
     try {
       const userId = req.params.id;
