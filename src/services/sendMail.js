@@ -42,8 +42,98 @@ export async function sendWelcomeEmail(data) {
 }
 
 
+export async function sendInterviewEmail(data) {
+  try {
+    const payload = {
+      sender: { name: "Sheryians", email: "anshur9608837@gmail.com" },
+      to: [{ email: data.candidateEmail, name: data.candidateName}],
+      subject: `Interview Scheduled for ${data.jobTitle}`,
+      htmlContent: `
+        <div style="font-family: Arial; padding: 20px; background: #f4f4f4; border-radius: 10px;">
+          <h1 style="color: #1a73e8;">Hi ${data.candidateName || "Candidate"}!</h1>
+          <p>Your interview for <strong>${data.jobTitle}</strong> at <strong>Sheryians</strong> has been scheduled.</p>
+          <p><strong>Date & Time:</strong> ${new Date(data.Timing).toLocaleString()}</p>
+          <p><strong>Meeting Link:</strong></p>
+          <a href="${data.meetingLink}" target="_blank">${data.meetingLink}</a>
+          <br /><br />
+          <p>Please join on time and ensure a stable internet connection.</p>
+          <hr />
+          <small>Best of luck!</small>
+        </div>
+      `,
+      textContent: `Hi ${data.name}, your interview for ${data.jobTitle} is scheduled on ${new Date(data.interviewTime).toLocaleString()}. Meeting link: ${data.meetingLink}`,
+    };
+   console.log(payload)
+    const response = await axios.post(BREVO_URL, payload, {
+      headers: {
+        "api-key": BREVO_API_KEY,
+        "Content-Type": "application/json",
+      },
+    });
 
+    console.log("INTERVIEW EMAIL SENT:", response.data.messageId);
+    return response.data;
+  } 
+catch (error) {
+  console.error("Brevo interview email failed:", {
+    message: error.message,
+    status: error.response?.status,
+    data: error.response?.data
+  });
+  throw error;
+}
+}
 
+export async function sendInterviewerEmail(data) {
+  try {
+    console.log(data);
+    
+    const payload = {
+      sender: { name: "Sheryians", email: "anshur9608837@gmail.com" },
+      to: [{ email: data.interviewer}],
+      subject: `Interview Scheduled for ${data.jobTitle}`,
+      htmlContent: `
+        <div style="font-family: Arial; padding: 20px; background: #f4f4f4; border-radius: 10px;">
+          <h1 style="color: #1a73e8;">Dear interviewer,</h1>
+          <p>I hope this email finds you well.</p>
+          <p>This is to inform you that an interview has been scheduled for the following candidate:</p>
+          <p><strong>Candidate Name:</strong> ${data.candidateName}</p>
+          <p><strong>Position:</strong> ${data.jobTitle}</p>
+          <p><strong>Date & Time:</strong> ${new Date(data.Timing).toLocaleString()}</p>
+          <p><strong>Meeting Link:</strong></p>
+          <a href="${data.meetingLink}" target="_blank">${data.meetingLink}</a>
+          <br /><br />
+
+          <p>Kindly let us know if the scheduled time works for you or if any adjustments are required.</p>
+          <p>Please feel free to reach out if you have any questions or need further information.</p>
+          <p>Thank you for your time and cooperation.</p>
+          <hr />
+          <small>Best regards, Sheryians Team</small>
+          
+        </div>
+      `,
+      textContent: `Dear Interviwer, I hope this email finds you well. This is to inform you that an interview has been scheduled for the following candidate Name: ${data.name} Position: ${data.jobTitle} Date & Time: ${new Date(data.interviewTime).toLocaleString()}. Meeting link: ${data.meetingLink}`,
+    };
+    console.log(payload)
+    const response = await axios.post(BREVO_URL, payload, {
+      headers: {
+        "api-key": BREVO_API_KEY,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("INTERVIEW EMAIL SENT:", response.data.messageId);
+    return response.data;
+  } 
+catch (error) {
+  console.error("Brevo interview email failed:", {
+    message: error.message,
+    status: error.response?.status,
+    data: error.response?.data
+  });
+  throw error;
+}
+}
 
 
 
