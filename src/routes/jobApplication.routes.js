@@ -55,13 +55,5 @@ router.get("/applicants/:id", authenticateJWT, authorize("admin"), jobApplicatio
 router.get("/my-applications", authenticateJWT, jobApplicationController.getCandidateAllApplications);
 
 
-// router.patch(
-//   "/bulk-update",
-//   authenticateJWT,
-//   authorize("admin"),
-//   bulkUpdateJobStatus,
-//   jobApplicationController.bulkUpdateApplicationStatus
-// );
-
 
 export default router;
