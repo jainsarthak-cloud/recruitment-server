@@ -285,8 +285,8 @@ class UserService {
     return safeUser;
   }
 
-  async getAllUsers(page = 1, limit = 10) {
-    const result = await this.userRepository.findAllUsers(page, limit);
+  async getAllUsers(page = 1, limit = 10,role) {
+    const result = await this.userRepository.findAllUsers(page, limit,role);
     return result;
   }
 

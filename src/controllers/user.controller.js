@@ -87,22 +87,25 @@ class UserController {
     }
   }
 
-  async getAllUsers(req, res, next) {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const result = await this.userService.getAllUsers(page, limit);
+async getAllUsers(req, res, next) {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const role = req.query.role; // yha se role aayega
 
-      return res.status(200).json({
-        success: true,
-        data: result.data,
-        pagination: result.pagination,
-        message: "Users fetched successfully",
-      });
-    } catch (err) {
-      next(err);
-    }
+    const result = await this.userService.getAllUsers(page, limit, role);
+
+    return res.status(200).json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+      message: "Users fetched successfully",
+    });
+  } catch (err) {
+    next(err);
   }
+}
+
 
   async deleteUser(req, res, next) {
     try {

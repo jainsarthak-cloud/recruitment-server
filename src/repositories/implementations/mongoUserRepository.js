@@ -61,46 +61,60 @@ class MongoUserRepository extends IUserRepository {
   }
 
   // New method from dev branch: Get all users with role info
-  async findAllUsers(page = 1, limit = 10) {
-    try {
-      const pipeline = [
-        {
-          $lookup: {
-            from: "roles",
-            localField: "roleId",
-            foreignField: "_id",
-            as: "role",
-          },
+async findAllUsers(page = 1, limit = 10, roleName) {
+  try {
+    const pipeline = [
+      {
+        $lookup: {
+          from: "roles",
+          localField: "roleId",
+          foreignField: "_id",
+          as: "role",
         },
-        {
-          $unwind: {
-            path: "$role",
-            preserveNullAndEmptyArrays: true,
-          },
+      },
+      {
+        $unwind: {
+          path: "$role",
+          preserveNullAndEmptyArrays: true,
         },
-        {
-          $project: {
-            _id: 1,
-            email: 1,
-            firstName: 1,
-            lastName: 1,
-            phoneNumber: 1,
-            googleId: 1,
-            isVerified: 1,
-            role: {
-              _id: "$role._id",
-              name: "$role.name",
-              description: "$role.description",
+      },
+
+      // 🔥 ROLE FILTER
+      ...(roleName
+        ? [
+            {
+              $match: {
+                "role.name": roleName,
+              },
             },
+          ]
+        : []),
+
+      {
+        $project: {
+          _id: 1,
+          email: 1,
+          firstName: 1,
+          lastName: 1,
+          phoneNumber: 1,
+          googleId: 1,
+          isVerified: 1,
+          role: {
+            _id: "$role._id",
+            name: "$role.name",
+            description: "$role.description",
           },
         },
-        { $sort: { createdAt: -1 } }
-      ];
-      return await paginateAggregation(User, pipeline, { page, limit });
-    } catch (error) {
-      throw new AppError("Failed to fetch all users with roles", 500, error);
-    }
+      },
+      { $sort: { createdAt: -1 } },
+    ];
+
+    return await paginateAggregation(User, pipeline, { page, limit });
+  } catch (error) {
+    throw new AppError("Failed to fetch all users with roles", 500, error);
   }
+}
+
 
   // Improved findUserById (combining best from both branches)
   async findUserById(id) {

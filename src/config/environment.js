@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({
+   path:"./src/.env"
+});
+ 
 
+ console.log("process.env.GROQ_API_KEY:", process.env.GROQ_API_KEY);
 export default {
   MONGO_URI: process.env.MONGO_URI,
   REDIS_PORT: process.env.REDIS_PORT,
