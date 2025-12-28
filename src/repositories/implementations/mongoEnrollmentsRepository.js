@@ -1,63 +1,69 @@
-import TestEnrollments from "../../models/TestEnrollments.js";
-import { AppError } from "../../utils/errors.js";
-import IEnrollment from "../contracts/IEnrollment.js";
+import TestEnrollments from "../../models/TestEnrollments.js"
+import { AppError } from "../../utils/errors.js"
+import IEnrollment from "../contracts/IEnrollment.js"
 
 class MongoEnrollmentsRespository extends IEnrollment {
   async enrollUser(testId, email) {
     try {
-      const newEnrollment = new TestEnrollments({ testId, email });
-      return await newEnrollment.save();
+      const existing = await TestEnrollments.findOne({ testId, email }).lean()
+
+      if (existing) {
+        return { enrollment: existing, isNew: false }
+      }
+
+      const enrollment = await TestEnrollments.create({
+        testId,
+        email,
+        status: "Assigned",
+      })
+
+      return { enrollment, isNew: true }
     } catch (error) {
-      throw new AppError(
-        `Failed to enroll user in test: ${error.message}`,
-        500,
-        error
-      );
+      throw new AppError("Unable to enroll user at the moment.", 500)
     }
   }
 
   async findEnrollment(testId, email) {
     try {
-      return await TestEnrollments.findOne({ testId, email }).lean();
+      return await TestEnrollments.findOne({ testId, email }).lean()
     } catch (error) {
-      throw new AppError(
-        `Failed to find enrollment: ${error.message}`,
-        500,
-        error
-      );
+      //  ✅ DUPLICATE (unique index exists)
+      if (error.code === 11000) {
+        return null
+      }
+
+      // ❌ NEVER expose DB error
+      throw new AppError("Unable to enroll user at the moment.", 500)
     }
   }
 
+  // async findEnrollmentsByUser(email) {
+  //   try {
+  //     const enrollments = await TestEnrollments.aggregate([
+  //       {
+  //         $match: { email: email },
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "tests",
+  //           localField: "testId",
+  //           foreignField: "_id",
+  //           as: "test",
+  //         },
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$test",
+  //           preserveNullAndEmptyArrays: true,
+  //         },
+  //       },
+  //     ]);
 
-
-// async findEnrollmentsByUser(email) {
-//   try {
-//     const enrollments = await TestEnrollments.aggregate([
-//       {
-//         $match: { email: email },
-//       },
-//       {
-//         $lookup: {
-//           from: "tests",
-//           localField: "testId",
-//           foreignField: "_id",
-//           as: "test",
-//         },
-//       },
-//       {
-//         $unwind: {
-//           path: "$test",
-//           preserveNullAndEmptyArrays: true,
-//         },
-//       },
-//     ]);
-
-//     return enrollments;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
-
+  //     return enrollments;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   // async findEnrollmentsByUser(email) {
   //   try {
@@ -88,90 +94,116 @@ class MongoEnrollmentsRespository extends IEnrollment {
   //   }
   // }
 
-async findEnrollmentsByUser(email) {
-  try {
-    const enrollments = await TestEnrollments.aggregate([
-      {
-        $match: { email: email },
-      },
-      {
-        $lookup: {
-          from: "tests",
-          localField: "testId",
-          foreignField: "_id",
-          as: "test",
+  async findEnrollmentsByUser(email) {
+    try {
+      const enrollments = await TestEnrollments.aggregate([
+        {
+          $match: { email: email },
         },
-      },
-      {
-        $unwind: {
-          path: "$test",
-          preserveNullAndEmptyArrays: true,
+        {
+          $lookup: {
+            from: "tests",
+            localField: "testId",
+            foreignField: "_id",
+            as: "test",
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "testattempts",
-          let: { testId: "$test._id", email: "$email" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$testId", "$$testId"] },
-                    { $eq: ["$email", "$$email"] },
-                  ],
+        {
+          $unwind: {
+            path: "$test",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "testattempts",
+            let: { testId: "$test._id", email: "$email" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [{ $eq: ["$testId", "$$testId"] }, { $eq: ["$email", "$$email"] }],
+                  },
                 },
               },
-            },
-            { $project: { _id: 1 } } // Only need _id to check existence
-          ],
-          as: "userAttempts",
+              { $project: { _id: 1 } }, // Only need _id to check existence
+            ],
+            as: "userAttempts",
+          },
         },
-      },
-      {
-        $addFields: {
-          hasAttempt: { $gt: [{ $size: "$userAttempts" }, 0] },
+        {
+          $addFields: {
+            hasAttempt: { $gt: [{ $size: "$userAttempts" }, 0] },
+          },
         },
-      },
-      {
-        $project: {
-          userAttempts: 0, // ❌ remove array from final output
+        {
+          $project: {
+            userAttempts: 0, // ❌ remove array from final output
+          },
         },
-      },
-    ]);
+      ])
 
-    return enrollments;
-  } catch (error) {
-    throw error;
+      return enrollments
+    } catch (error) {
+      throw error
+    }
   }
-}
-
 
   async bulkCreateEnrollment(testId, emails) {
     try {
-      const operations = emails.map((email) => ({
+      // 1️⃣ Find already enrolled emails
+      const existing = await TestEnrollments.find({
+        testId,
+        email: { $in: emails.map((e) => e.toLowerCase().trim()) },
+      })
+        .select("email")
+        .lean()
+
+      const existingEmails = new Set(existing.map((e) => e.email))
+
+      // 2️⃣ Keep only new emails
+      const newEmails = emails
+        .map((e) => e.toLowerCase().trim())
+        .filter((e) => !existingEmails.has(e))
+
+      if (newEmails.length === 0) {
+        // ✅ Single email case
+        if (emails.length === 1) {
+          throw new AppError("User is already enrolled for this test.", 409)
+        }
+
+        // ✅ Multiple emails case
+        throw new AppError("All selected users are already enrolled for this test.", 409)
+      }
+
+      // 3️⃣ Insert only new ones
+      const operations = newEmails.map((email) => ({
         insertOne: {
           document: {
             testId,
-            email: email.toLowerCase().trim(),
+            email,
             enrolledAt: new Date(),
           },
         },
-      }));
+      }))
 
       const result = await TestEnrollments.bulkWrite(operations, {
         ordered: false,
-      });
+      })
 
-      return result;
+      return {
+        insertedCount: result.insertedCount,
+        skippedCount: emails.length - newEmails.length,
+        newEmails,
+      }
     } catch (error) {
-      throw new AppError(
-        `Failed to enroll user in test: ${error.message}`,
-        500,
-        error
-      );
+      if (error instanceof AppError) {
+        throw error
+      }
+
+      throw new AppError("Unable to enroll users at the moment.", 500)
     }
   }
 }
 
-export default MongoEnrollmentsRespository;
+export default MongoEnrollmentsRespository

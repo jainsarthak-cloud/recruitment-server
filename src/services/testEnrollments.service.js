@@ -1,23 +1,20 @@
-import { emailQueue } from "../queues/emailQueue.js";
-import MongoEnrollmentsRespository from "../repositories/implementations/mongoEnrollmentsRepository.js";
-import logger from "../utils/logger.js";
-
-
+import { emailQueue } from "../queues/emailQueue.js"
+import MongoEnrollmentsRespository from "../repositories/implementations/mongoEnrollmentsRepository.js"
+import logger from "../utils/logger.js"
 
 class TestEnrollmentService {
   constructor() {
-    this.testEnrollmentRepository = new MongoEnrollmentsRespository();
+    this.testEnrollmentRepository = new MongoEnrollmentsRespository()
   }
 
   async enrollUser(testId, email) {
-    const existingEnrollment =
-      await this.testEnrollmentRepository.findEnrollment(testId, email);
-    if (existingEnrollment) {
-      console.log("return from already exist enroll candidate")
-      return existingEnrollment;
+    const { enrollment, isNew } = await this.testEnrollmentRepository.enrollUser(testId, email)
+
+    if (!isNew) {
+      throw new AppError("User is already enrolled for this test.", 409)
     }
 
-    const res = await this.testEnrollmentRepository.enrollUser(testId, email);
+    const res = enrollment
 
     try {
       // ADD JOB TO BULLMQ QUEUE — NOT SEND EMAIL DIRECTLY
@@ -37,34 +34,37 @@ class TestEnrollmentService {
           removeOnComplete: true,
           removeOnFail: false,
         }
-      );
+      )
 
       logger.info(`test enroll email job queued for ${email}`, {
         testId: res?.testId.toString(),
-      });
+      })
     } catch (error) {
       logger.warn("Failed to queue enroll email", {
         email: email,
         testId: res?.testId.toString(),
         error: error.message,
-      });
+      })
       console.log(error)
     }
 
-    return res;
+    return res
   }
 
   async getAssignedTests(email) {
-    return await this.testEnrollmentRepository.findEnrollmentsByUser(email);
+    return await this.testEnrollmentRepository.findEnrollmentsByUser(email)
   }
 
   async enrollUsersBulk(testId, emails) {
-    const result = await this.testEnrollmentRepository.bulkCreateEnrollment(testId, emails);
+    // 1️⃣ Call repository bulk logic
+    const result = await this.testEnrollmentRepository.bulkCreateEnrollment(testId, emails)
+
     try {
-      const jobs = emails.map(email => ({
+      // 2️⃣ Send email ONLY to newly enrolled users
+      const jobs = result.newEmails.map((email) => ({
         name: "enroll-candidate",
-        data: { 
-          to: email.toLowerCase().trim(),
+        data: {
+          to: email,
           name: "Candidate",
           testId: testId.toString(),
         },
@@ -74,22 +74,31 @@ class TestEnrollmentService {
           removeOnComplete: true,
           removeOnFail: false,
         },
-      }));
+      }))
 
-      await emailQueue.addBulk(jobs);
-      logger.info(`Queued ${jobs.length} bulk enrollment emails`, { testId });
+      if (jobs.length > 0) {
+        await emailQueue.addBulk(jobs)
+        logger.info(`Queued ${jobs.length} bulk enrollment emails`, { testId })
+      }
     } catch (error) {
-      logger.warn("Failed to queue bulk emails", { testId, error: error.message });
+      logger.warn("Failed to queue bulk emails", {
+        testId,
+        error: error.message,
+      })
     }
 
+    // 3️⃣ Return accurate response to frontend
     return {
       success: true,
-      insertedCount: result.insertedCount || result.nInserted || emails.length,
+      message:
+        result.insertedCount === 0
+          ? "All selected users are already enrolled for this test."
+          : "Users enrolled successfully.",
+      insertedCount: result.insertedCount,
+      skippedCount: result.skippedCount,
       totalProvided: emails.length,
-    };
+    }
   }
-
-
 }
 
-export default TestEnrollmentService;
+export default TestEnrollmentService
