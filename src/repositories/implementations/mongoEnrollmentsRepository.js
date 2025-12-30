@@ -167,14 +167,13 @@ class MongoEnrollmentsRespository extends IEnrollment {
         .filter((e) => !existingEmails.has(e))
 
       if (newEmails.length === 0) {
-        // ✅ Single email case
-        if (emails.length === 1) {
-          throw new AppError("User is already enrolled for this test.", 409)
-        }
+  return {
+    insertedCount: 0,
+    skippedCount: emails.length,
+    newEmails: [],
+  }
+}
 
-        // ✅ Multiple emails case
-        throw new AppError("All selected users are already enrolled for this test.", 409)
-      }
 
       // 3️⃣ Insert only new ones
       const operations = newEmails.map((email) => ({
