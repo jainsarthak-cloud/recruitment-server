@@ -48,10 +48,19 @@ router.get(
   jobApplicationController.filterApplications
 );
 
+router.get(
+  "/shortlisted/count",
+  authenticateJWT,
+  authorize("admin"),
+  jobApplicationController.getShortlistedCount
+);
+
 
 router.get("/applicants/:id", authenticateJWT, authorize("admin"), jobApplicationController.getApplicantsByJobId);
 
 
 router.get("/my-applications", authenticateJWT, jobApplicationController.getCandidateAllApplications);
+
+
 
 export default router;

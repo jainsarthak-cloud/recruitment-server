@@ -441,6 +441,27 @@ class MongoApplicationRespository extends IJobApplicationRepository {
     throw new AppError("Failed to fetch applicants by job id", 500);
   }
 }
+
+  async countByStatus(status) {
+    try {
+      const filter = status ? { status } : {};
+      const count = await jobAppModel.countDocuments(filter);
+      return count;
+    } catch (error) {
+      console.error(error);
+      throw new AppError("Failed to count applications by status", 500);
+    }
+  }
+
+  async countDistinctCandidatesByStatus(status) {
+    try {
+      const distinct = await jobAppModel.distinct("candidateId", { status });
+      return distinct.length;
+    } catch (error) {
+      console.error(error);
+      throw new AppError("Failed to count distinct candidates by status", 500);
+    }
+  }
 }
 
 export default MongoApplicationRespository;

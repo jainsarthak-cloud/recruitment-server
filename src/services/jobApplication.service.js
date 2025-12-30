@@ -123,6 +123,16 @@ class JobApplicationService {
     return await this.jobAppRepo.getApplicantsByJobId(jobId);
   }
 
+  async getShortlistedCounts() {
+    // Returns both total shortlisted applications and unique shortlisted candidates
+    const applicationCount = await this.jobAppRepo.countByStatus("shortlisted");
+    const candidateCount = await this.jobAppRepo.countDistinctCandidatesByStatus("shortlisted");
+    return {
+      shortlistedApplications: applicationCount,
+      shortlistedCandidates: candidateCount,
+    };
+  }
+
    async bulkUpdateApplicationStatus(applicationIds, status) {
   // 1️⃣ Fetch applicants for mail
   const applications =
