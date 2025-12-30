@@ -9,13 +9,16 @@ class TestEnrollmentService {
   }
 
   async enrollUser(testId, email) {
-    const { enrollment, isNew } = await this.testEnrollmentRepository.enrollUser(testId, email)
-
-    if (!isNew) {
-      throw new AppError("User is already enrolled for this test.", 409)
+    const existingEnrollment = await this.testEnrollmentRepository.findEnrollment(testId, email)
+    if (existingEnrollment) {
+      console.log("return from already exist enroll candidate")
+      return existingEnrollment
     }
 
-    const res = enrollment
+    const res = await this.testEnrollmentRepository.enrollUser(testId, email)
+
+    const test = await Tests.findById(testId).select("title").lean()
+    const testTitle = test?.title || "Sheryians Assesment test"
 
     try {
       // ADD JOB TO BULLMQ QUEUE — NOT SEND EMAIL DIRECTLY
@@ -25,6 +28,7 @@ class TestEnrollmentService {
           to: email.toLowerCase().trim(),
           name: "Candidate",
           testId: res?.testId.toString(),
+          testTitle:testTitle,
         },
         {
           attempts: 3,
