@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-//
+
     password: {
       type: String,
       select: false,
@@ -62,9 +62,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-/**
- * 🔐 Hash password before save
- */
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 

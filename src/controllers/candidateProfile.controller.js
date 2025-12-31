@@ -11,7 +11,7 @@ class CandidateProfileController {
       ...req.body,
       userId: req.userId,
     };
-    //
+    
 
     const profile = await this.candidateProfileService.createProfile(
       profileData
@@ -135,3 +135,4 @@ class CandidateProfileController {
 }
 
 export default CandidateProfileController;
+//
