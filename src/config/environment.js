@@ -1,5 +1,18 @@
-import dotenv from "dotenv";
-dotenv.config({ path: './src/.env' });
+import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+
+// Try loading .env from project root then fallback to src/.env
+const envCandidates = [
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), 'src', '.env'),
+];
+for (const envPath of envCandidates) {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+    break;
+  }
+}
 
 export default {
   MONGO_URI: process.env.MONGO_URI,
@@ -8,12 +21,12 @@ export default {
   REDIS_HOST: process.env.REDIS_HOST || 'localhost',
   JWT_SECRET: process.env.JWT_SECRET,
   PORT: process.env.PORT || 3000,
-  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS || "http://localhost:3000",
-  NODE_ENV: process.env.NODE_ENV || "development",
+  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS || 'http://localhost:3000',
+  NODE_ENV: process.env.NODE_ENV || 'development',
   REFRESH_SECRET: process.env.REFRESH_SECRET,
   REFRESH_EXPIRES_IN: process.env.REFRESH_EXPIRES_IN,
   GROQ_API_KEY: process.env.GROQ_API_KEY,
   ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
   NODE_ENV: process.env.NODE_ENV,
-  FRONTEND_URL:process.env.FRONTEND_URL
+  FRONTEND_URL: process.env.FRONTEND_URL,
 };

@@ -1,12 +1,12 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const shareCandidateSchema = new mongoose.Schema({
   selectedUsers: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
   ],
 });
 
-export default mongoose.model("ShareCandidate", shareCandidateSchema);
+export default mongoose.model('ShareCandidate', shareCandidateSchema);
