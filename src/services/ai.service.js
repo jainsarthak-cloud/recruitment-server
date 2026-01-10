@@ -1,7 +1,8 @@
 import { ChatGroq } from "@langchain/groq";
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: './src/.env' });
+
 
 export const llm = new ChatGroq({
     temperature: 0,
