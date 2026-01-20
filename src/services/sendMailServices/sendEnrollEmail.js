@@ -13,7 +13,7 @@ export async function sendEnrollEmail(data) {
     const testLink = `${FRONTEND_URL}/test/${data.testId}`
 
     const payload = {
-      sender: { name: "Sheriyansh Recruitment", email: "anshur9608837@gmail.com" },
+      sender: { name: "Sheryians Recruitment", email: "anshur9608837@gmail.com" },
       to: [{ email: data.to, name: data.name || "Candidate" }],
       subject: `Test Assigned: ${data.testTitle || "Assessment"}`,
       htmlContent: `
@@ -99,7 +99,7 @@ export async function sendEnrollEmail(data) {
   <p style="margin:0; font-size:14px; color:#111827;">
     Visit our recruitment portal for more job openings and updates:
     <br/>
-    <a href="https://recruitment-client-git-dev-anshu-pandeys-projects.vercel.app"
+    <a href="https://hire.sheryians.com"
        style="color:#111827; text-decoration:underline;">
       recruitment-client-git-dev-anshu-pandeys-projects.vercel.app
     </a>
