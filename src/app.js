@@ -50,7 +50,11 @@ app.use("/api/test-attempts", testAttemptRoutes);
 app.use('/api/candidate-profile', candidateProfileRoutes);
 app.use('/api/aws' , awsRouter)
 app.use("/api/auth", resendMailRoutes);
+app.use("/api/sanuauth", resendMailRoutes);
+
+
 app.use("/api/interviews", ScheduleInterviewRoutes);
+
 //   to: "agr.rbih@gmail.com",
 //   name: "Rohan",
 //   jobTitle: "Frontend Developer",
@@ -60,6 +64,7 @@ app.use("/api/interviews", ScheduleInterviewRoutes);
 app.use("/api/saved-jobs", savedJobRoutes);
 app.use("/api/password", passwordRoutes);
 
+app.use('/api/ai',)
 app.use('/api/ai/', ViolationRoutes)
 app.use('/api/share', shareCandidate);
 app.use("/api/token",tokenRoutes)
