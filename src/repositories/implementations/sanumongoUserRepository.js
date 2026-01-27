@@ -64,7 +64,7 @@ class MongoUserRepository extends IUserRepository {
   async findAllUsers(page = 1, limit = 10, search = "") {
     try {
       const pipeline = [
-        // 🔍 SEARCH FILTER (must be first)
+        // 🔍 SEARCH FILTER (must be first) 
         ...(search
           ? [
             {

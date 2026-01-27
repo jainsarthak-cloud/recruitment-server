@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import userRoutes from "./routes/user.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import sanuauthRoutes from "./routes/sanuauth.routes.js";
+
 import roleRoutes from "./routes/role.routes.js";
 import skillRoutes from "./routes/skill.routes.js";
 import permissionRoutes from "./routes/permission.routes.js";
@@ -36,6 +38,8 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/sanuauth",sanuauthRoutes);
+
 app.use("/api/roles", roleRoutes);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/jobs", jobRoleRoutes);     // add new route inside it
@@ -64,7 +68,7 @@ app.use("/api/interviews", ScheduleInterviewRoutes);
 app.use("/api/saved-jobs", savedJobRoutes);
 app.use("/api/password", passwordRoutes);
 
-app.use('/api/ai',)
+app.use('/api/ai',aiRoutes);
 app.use('/api/ai/', ViolationRoutes)
 app.use('/api/share', shareCandidate);
 app.use("/api/token",tokenRoutes)

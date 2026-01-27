@@ -13,7 +13,7 @@ class IUserRepository {
 
   async updateUser(id, userData) {
     throw new Error("Method not implemented");
-  }
+  } 
   async findUser(query){
      throw new Error("Method not implemented");
   }

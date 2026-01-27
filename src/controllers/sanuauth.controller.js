@@ -1,6 +1,6 @@
-import UserService from "../services/sanuauth.services.js";
+import UserService from "../services/sanuUser.service.js";
 import { AppError } from "../utils/errors.js";
-import AuthService from "../services/sanuauth.services.js";
+import AuthService from "../services/sanuauth.service.js";
 import { redisClient } from "../config/redis.js";
 
 class AuthController {
