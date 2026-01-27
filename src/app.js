@@ -10,6 +10,7 @@ import candidateProfileRoutes from "./routes/candidateProfile.routes.js";
 import errorHandler from "./middlewares/errorHandler.middleware.js";
 import cookieParser from "cookie-parser";
 import jobCategoryRoutes from "./routes/jobCategory.routes.js";
+import hJobCategoryRoutes from './routes/hJobCategory.routes.js'
 import expereniceRoutes from "./routes/experience.routes.js";
 import aiRoutes from "./routes/ai.routes.js";
 import { corsOptions } from "./config/corsOptions.js";
@@ -56,6 +57,9 @@ app.use("/api/interviews", ScheduleInterviewRoutes);
 //   jobTitle: "Frontend Developer",
 //   appliedAt: new Date()
 // });
+
+// Jod Categories
+app.use("/api/hjob-categories", hJobCategoryRoutes);
 
 app.use("/api/saved-jobs", savedJobRoutes);
 app.use("/api/password", passwordRoutes);
