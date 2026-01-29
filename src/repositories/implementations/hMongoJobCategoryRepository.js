@@ -6,8 +6,7 @@ class HMongoJobCategoryRepository extends HJobCategoryRepository {
 
     async create(categoryData) {
         try {
-            const created = await hJobCategory.create(categoryData)
-            return created
+            return await hJobCategory.create(categoryData);
         } catch (error) {
             if (error.code === 11000) {
                 throw { status: 400, message: "Category name already exists" }

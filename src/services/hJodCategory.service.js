@@ -1,15 +1,18 @@
 import { AppError } from '../utils/errors.js'
-import hMongoJobCategoryRepository from '../repositories/implementations/hMongoJobCategoryRepository.js'
+import HMongoJobCategoryRepository from '../repositories/implementations/hMongoJobCategoryRepository.js'
 
 class HJobCategoryService {
 
     constructor() {
-        this.jobCategoryRepository = new hMongoJobCategoryRepository()
+        this.jobCategoryRepository = new HMongoJobCategoryRepository()
     }
 
     async createCategory(data) {
-        const isExistName = await this.jobCategoryRepository.findByName(data.name);
-        if (isExistName) throw new AppError("Category name already exists", 400)
+        const isExistName = await this.jobCategoryRepository.findByName(data.name)
+        if (isExistName) {
+            throw new AppError("Category name already exists", 400);
+        }
+
         return await this.jobCategoryRepository.create(data)
     }
 
@@ -20,7 +23,6 @@ class HJobCategoryService {
     async getById(id) {
         const category = await this.jobCategoryRepository.findById(id)
         if (!category) throw new AppError("Category not found", 404)
-
         return category
     }
 
@@ -28,12 +30,13 @@ class HJobCategoryService {
         if (data.name) {
             const exist = await this.jobCategoryRepository.findByName(data.name)
             if (exist && exist._id.toString() !== id) {
-                throw new AppError("Category name already exists", 404)
+                throw new AppError("Category name already exists", 400)
             }
         }
 
+        // ✅ PASS OBJECT
         const updated = await this.jobCategoryRepository.updateById(id, data)
-        if (!updated) throw new AppError("Category not found")
+        if (!updated) throw new AppError("Category not found", 404)
 
         return updated
     }
@@ -41,7 +44,6 @@ class HJobCategoryService {
     async deleteById(id) {
         const deleted = await this.jobCategoryRepository.deleteById(id)
         if (!deleted) throw new AppError("Category not found", 404)
-
         return deleted
     }
 }

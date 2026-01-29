@@ -1,16 +1,20 @@
 import mongoose from "mongoose";
 
-const hJobCategorymodel = new mongoose.Schema(
+const hJobCategorySchema = new mongoose.Schema(
     {
-        category: {
+        name: {
             type: String,
-            require: [true, 'Category name is required'],
+            required: [true, 'Category name is required'],
             unique: true,
             trim: true
         }
+    },
+    {
+        timestamps: true
     }
-)
+);
 
-const himanshuJobSchema = mongoose.model("himanashuJobCategory", hJobCategorymodel)
 
-export default himanshuJobSchema
+const himanshuJobCategory = mongoose.model("himanshuJobCategory", hJobCategorySchema)
+
+export default himanshuJobCategory;
