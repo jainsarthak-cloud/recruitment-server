@@ -51,6 +51,7 @@ app.use('/api/candidate-profile', candidateProfileRoutes);
 app.use('/api/aws' , awsRouter)
 app.use("/api/auth", resendMailRoutes);
 app.use("/api/interviews", ScheduleInterviewRoutes);
+import CartRoutes from "./routes/cart.routes.js";
 //   to: "agr.rbih@gmail.com",
 //   name: "Rohan",
 //   jobTitle: "Frontend Developer",
@@ -66,3 +67,4 @@ app.use("/api/token",tokenRoutes)
 
 app.use(errorHandler);
 export default app;
+app.use("/api/cart", CartRoutes);
