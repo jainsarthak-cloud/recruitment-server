@@ -26,6 +26,7 @@ import ScheduleInterviewRoutes from "./routes/scheduleInterview.routes.js";
 import savedJobRoutes from "./routes/savedJob.routes.js";
 import passwordRoutes from "./routes/password.routes.js";
 // import deleteTestsRoutes from "./routes/delete-tests.routes.js";
+import productRoutes from "./routes/product.routes.js";
 
 import ViolationRoutes  from "./routes/testViolation.routes.js";
 import shareCandidate from "./routes/shareCandidate.routes.js";
@@ -35,6 +36,9 @@ app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
+
+app.use("/api/products", productRoutes);
+
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/roles", roleRoutes);
