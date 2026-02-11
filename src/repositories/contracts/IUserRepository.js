@@ -27,5 +27,5 @@ class IUserRepository {
     throw new Error("Method not implemented");
   }
 }
-
+  
 export default IUserRepository;
