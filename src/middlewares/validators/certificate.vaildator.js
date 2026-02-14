@@ -1,74 +1,67 @@
 import Joi from "joi";
 import { AppError } from "../../utils/errors.js";
 
-// ENUM values (keep in sync with mongoose)
 const certificateTypes = ["Completion", "Internship", "Offer", "Other"];
+const htmlUrlRegex = /^https?:\/\/.+\.html(\?.*)?$/i;
 
-/* ===============================
-   CREATE CERTIFICATE VALIDATOR
-================================= */
 const createCertificateSchema = Joi.object({
-    name: Joi.string().trim().min(2).max(120).required().messages({
-        "string.base": "Certificate name must be a string",
-        "string.empty": "Certificate name is required",
-        "string.min": "Certificate name must be at least 2 characters",
-        "string.max": "Certificate name must be at most 120 characters",
-        "any.required": "Certificate name is required",
+  name: Joi.string().trim().min(2).max(120).required().messages({
+    "string.base": "Certificate name must be a string",
+    "string.empty": "Certificate name is required",
+    "string.min": "Certificate name must be at least 2 characters",
+    "string.max": "Certificate name must be at most 120 characters",
+    "any.required": "Certificate name is required",
+  }),
+
+  type: Joi.string()
+    .valid(...certificateTypes)
+    .optional()
+    .messages({
+      "string.base": "Certificate type must be a string",
+      "any.only":
+        "Certificate type must be one of Completion, Internship, Offer, or Other",
     }),
 
-    type: Joi.string()
-        .valid(...certificateTypes)
-        .optional()
-        .messages({
-            "string.base": "Certificate type must be a string",
-            "any.only":
-                "Certificate type must be one of Completion, Internship, Offer, or Other",
-        }),
-
-    file: Joi.string().trim().required().messages({
-        "string.base": "Certificate file must be a string",
-        "string.empty": "Certificate file is required",
-        "any.required": "Certificate file is required",
-    }),
+  fileUrl: Joi.string().trim().pattern(htmlUrlRegex).required().messages({
+    "string.base": "Certificate file URL must be a string",
+    "string.empty": "Certificate file URL is required",
+    "string.pattern.base": "File URL must be a valid .html link",
+    "any.required": "Certificate file URL is required",
+  }),
 });
 
-/* ===============================
-   UPDATE CERTIFICATE VALIDATOR
-================================= */
 const updateCertificateSchema = Joi.object({
-    name: Joi.string().trim().min(2).max(120).optional().messages({
-        "string.base": "Certificate name must be a string",
-        "string.empty": "Certificate name cannot be empty",
-        "string.min": "Certificate name must be at least 2 characters",
-        "string.max": "Certificate name must be at most 120 characters",
+  name: Joi.string().trim().min(2).max(120).optional().messages({
+    "string.base": "Certificate name must be a string",
+    "string.empty": "Certificate name cannot be empty",
+    "string.min": "Certificate name must be at least 2 characters",
+    "string.max": "Certificate name must be at most 120 characters",
+  }),
+
+  type: Joi.string()
+    .valid(...certificateTypes)
+    .optional()
+    .messages({
+      "string.base": "Certificate type must be a string",
+      "any.only":
+        "Certificate type must be one of Completion, Internship, Offer, or Other",
     }),
 
-    type: Joi.string()
-        .valid(...certificateTypes)
-        .optional()
-        .messages({
-            "string.base": "Certificate type must be a string",
-            "any.only":
-                "Certificate type must be one of Completion, Internship, Offer, or Other",
-        }),
-
-    file: Joi.string().trim().optional().messages({
-        "string.base": "Certificate file must be a string",
-    }),
+  fileUrl: Joi.string().trim().pattern(htmlUrlRegex).optional().messages({
+    "string.base": "Certificate file URL must be a string",
+    "string.pattern.base": "File URL must be a valid .html link",
+  }),
 });
 
-/* ===============================
-   COMMON VALIDATE FUNCTION
-================================= */
 const validate = (schema) => (req, res, next) => {
-    const { error } = schema.validate(req.body, { abortEarly: false });
+  const { error } = schema.validate(req.body, { abortEarly: false });
 
-    if (error) {
-        const message = error.details.map((d) => d.message).join(", ");
-        return next(new AppError(message, 400));
-    }
+  if (error) {
+    const message = error.details.map((d) => d.message).join(", ");
+    return next(new AppError(message, 400));
+  }
 
-    next();
+  next();
 };
 
 export const createCertificateValidator = validate(createCertificateSchema);

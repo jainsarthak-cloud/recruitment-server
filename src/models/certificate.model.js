@@ -1,30 +1,34 @@
 import mongoose from "mongoose";
 
-const certificateSchema = new mongoose.Schema({
+const htmlUrlRegex = /^https?:\/\/.+\.html(\?.*)?$/i;
+
+const certificateSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
-        trim: true,
+      type: String,
+      required: true,
+      trim: true,
     },
 
     type: {
-        type: String,
-        enum: ["Completion", "Internship", "Offer", "Other"],
-        default: "Other"
+      type: String,
+      enum: ["Completion", "Internship", "Offer", "Other"],
+      default: "Other",
     },
 
-    file: {
-        type: String,
-        required: true,
+    fileUrl: {
+      type: String,
+      required: true,
+      trim: true,
+      validate: {
+        validator: function (v) {
+          return htmlUrlRegex.test(v);
+        },
+        message: "File URL must be a valid .html link",
+      },
     },
-
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    }
-
-},
-    { timestamps: true },
+  },
+  { timestamps: true },
 );
 
 const Certificate = mongoose.model("Certificate", certificateSchema);

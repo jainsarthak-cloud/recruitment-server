@@ -7,15 +7,13 @@ class CertificateService {
         this.certificateRepository = new MongoCertificateRepository();
     }
 
-
     async createCertificate(data) {
-        if (!data.name || !data.file) {
-            throw new AppError("Certificate name and file are required", 400);
+        if (!data.name || !data.fileUrl) {
+            throw new AppError("Certificate name and file URL are required", 400);
         }
 
         const exist = await this.certificateRepository.findByName(data.name);
         if (exist) throw new AppError("Cretificate name already exists", 400);
-
 
         return await this.certificateRepository.create(data);
     }
