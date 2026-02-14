@@ -22,7 +22,7 @@ router.get("/", certificateController.listAll);
 router.get("/:id", certificateController.get);
 
 // Update Cretificate
-router.put("/:id", updateCertificateValidator, certificateController.update);
+router.put("/update/:id", updateCertificateValidator, certificateController.update);
 
 // Delete Cretificate
 router.delete("/:id", certificateController.delete);

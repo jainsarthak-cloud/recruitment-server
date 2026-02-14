@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const htmlUrlRegex = /^https?:\/\/.+\.html(\?.*)?$/i;
+const htmlUrlRegex = /^https:\/\/[a-z0-9.-]+\.s3\.[a-z0-9-]+\.amazonaws\.com\/.+\.html(\?.*)?$/i;
 
 const certificateSchema = new mongoose.Schema(
   {
