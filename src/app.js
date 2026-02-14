@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
-app.use("/api/products", productRoutes);
+app.use("/api/product", productRoutes);
 
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
