@@ -6,7 +6,6 @@ const AReviewSchema = new Schema(
   {
     productId: {
       type: Schema.Types.ObjectId,
-      ref: "Product",
       required: true,
     },
 
@@ -39,9 +38,11 @@ const AReviewSchema = new Schema(
   }
 );
 
-// Indexes
-AReviewSchema.index({ productId: 1 });
-AReviewSchema.index({ userId: 1 });
-AReviewSchema.index({ rating: -1 });
+// One user can review one product only
+
+AReviewSchema.index(
+  { productId: 1, userId: 1 },
+  { unique: true }
+);
 
 export const AReview = mongoose.model("AReview", AReviewSchema);
