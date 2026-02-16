@@ -15,6 +15,7 @@ const jobReportSchema = new mongoose.Schema(
     reason: {
       type: String,
       enum: ["spam", "fake", "wrong_info", "other"],
+      default: "spam",
       required: true,
     },
     description: {
