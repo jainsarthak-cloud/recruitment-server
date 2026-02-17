@@ -19,7 +19,6 @@ router.get(
   "/",
   authenticateJWT,
   authorize("admin"),
-
   jobApplicationController.getAllApplications
 );
 
