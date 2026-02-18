@@ -35,4 +35,4 @@ class JobReportService {
   }
 }
 
-export default new JobReportService();
+export default JobReportService;

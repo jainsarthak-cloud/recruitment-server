@@ -1,12 +1,15 @@
-import jobReportService from "../services/jobReport.service.js";
+import JobReportService from "../services/jobReport.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 class JobReportController {
+  constructor() {
+    this.jobReportService = new JobReportService();
+  }
   // POST /api/job-reports
   reportJob = asyncHandler(async (req, res) => {
     const { jobId, reason, description } = req.body;
 
-    const report = await jobReportService.reportJob(req.userId, jobId, {
+    const report = await this.jobReportService.reportJob(req.userId, jobId, {
       reason,
       description,
     });
@@ -19,7 +22,7 @@ class JobReportController {
 
   // GET /api/job-reports/me
   getMyReports = asyncHandler(async (req, res) => {
-    const reports = await jobReportService.getMyReports(req.userId);
+    const reports = await this.jobReportService.getMyReports(req.userId);
 
     res.status(200).json({
       success: true,
@@ -29,7 +32,7 @@ class JobReportController {
 
   // GET /api/job-reports
   getAllReports = asyncHandler(async (req, res) => {
-    const reports = await jobReportService.getAllReports(req.query);
+    const reports = await this.jobReportService.getAllReports(req.query);
 
     res.status(200).json({
       success: true,
@@ -42,7 +45,7 @@ class JobReportController {
     const { id } = req.params;
     const { status } = req.body;
 
-    const updated = await jobReportService.updateReportStatus(id, status);
+    const updated = await this.jobReportService.updateReportStatus(id, status);
 
     res.status(200).json({
       success: true,
@@ -54,7 +57,7 @@ class JobReportController {
   deleteReport = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    await jobReportService.deleteReport(id);
+    await this.jobReportService.deleteReport(id);
 
     res.status(200).json({
       success: true,
