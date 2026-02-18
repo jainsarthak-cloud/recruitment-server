@@ -32,7 +32,54 @@ class MongoCertificateRepository extends ICertificateRepository {
   }
 
   async findAll() {
-    return await Certificate.aggregate([{ $match: {} }]);
+    try {
+      const pipeline = [
+        {
+          $match: {}
+        },
+        {
+          $lookup: {
+            from: "jobapplicationquestions",
+            let: { certificateId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$jobId", "$$certificateId"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  questions: 1,
+                  _id: 0
+                }
+              }
+            ],
+            as: "questions"
+          }
+        },
+        {
+          $addFields: {
+            questions: {
+              $cond: {
+                if: { $gt: [{ $size: "$questions" }, 0] },
+                then: { $arrayElemAt: ["$questions.questions", 0] },
+                else: []
+              }
+            }
+          }
+        },
+        {
+          $sort: { createdAt: -1 }
+        }
+      ];
+
+      return await Certificate.aggregate(pipeline);
+    } catch (error) {
+      console.error(error);
+      throw new AppError("Failed to fetch certificates", 500);
+    }
   }
 
   async update(id, updateData) {
