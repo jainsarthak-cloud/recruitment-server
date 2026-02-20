@@ -81,67 +81,57 @@ import Joi from "joi";
 import { AppError } from "../../utils/errors.js";
 
 const certificateTypes = ["Completion", "Internship", "Offer", "Other"];
+const htmlUrlRegex = /^https?:\/\/.+\.html(\?.*)?$/i;
 
-/* ===============================
-   CREATE CERTIFICATE VALIDATOR
-================================= */
 const createCertificateSchema = Joi.object({
   name: Joi.string().trim().min(2).max(120).required().messages({
+    "string.base": "Certificate name must be a string",
     "string.empty": "Certificate name is required",
+    "string.min": "Certificate name must be at least 2 characters",
+    "string.max": "Certificate name must be at most 120 characters",
+    "any.required": "Certificate name is required",
   }),
 
   type: Joi.string()
     .valid(...certificateTypes)
-    .optional(),
+    .optional()
+    .messages({
+      "string.base": "Certificate type must be a string",
+      "any.only":
+        "Certificate type must be one of Completion, Internship, Offer, or Other",
+    }),
 
-      file: Joi.string().required().messages({   // 🔥 ADD THIS
-    "string.empty": "File URL is required",
+  fileUrl: Joi.string().trim().pattern(htmlUrlRegex).required().messages({
+    "string.base": "Certificate file URL must be a string",
+    "string.empty": "Certificate file URL is required",
+    "string.pattern.base": "File URL must be a valid .html link",
+    "any.required": "Certificate file URL is required",
   }),
-
-  // url: Joi.string().uri().allow("").optional(),
-
-  fields: Joi.array()
-    .items(
-      Joi.object({
-        title: Joi.string().allow(""),
-        type: Joi.string().allow(""),
-        placeholder: Joi.string().allow(""),
-      })
-    )
-    .optional(),
 });
 
-/* ===============================
-   UPDATE CERTIFICATE VALIDATOR
-================================= */
 const updateCertificateSchema = Joi.object({
-  name: Joi.string().trim().min(2).max(120).optional(),
+  name: Joi.string().trim().min(2).max(120).optional().messages({
+    "string.base": "Certificate name must be a string",
+    "string.empty": "Certificate name cannot be empty",
+    "string.min": "Certificate name must be at least 2 characters",
+    "string.max": "Certificate name must be at most 120 characters",
+  }),
 
   type: Joi.string()
     .valid(...certificateTypes)
-    .optional(),
+    .optional()
+    .messages({
+      "string.base": "Certificate type must be a string",
+      "any.only":
+        "Certificate type must be one of Completion, Internship, Offer, or Other",
+    }),
 
-  url: Joi.string().uri().allow("").optional(),
-
-
-  //   file: Joi.string().required().messages({   // 🔥 ADD THIS
-  //   "string.empty": "File URL is required",
-  // }),
-
-  fields: Joi.array()
-    .items(
-      Joi.object({
-        title: Joi.string().allow(""),
-        type: Joi.string().allow(""),
-        placeholder: Joi.string().allow(""),
-      })
-    )
-    .optional(),
+  fileUrl: Joi.string().trim().pattern(htmlUrlRegex).optional().messages({
+    "string.base": "Certificate file URL must be a string",
+    "string.pattern.base": "File URL must be a valid .html link",
+  }),
 });
 
-/* ===============================
-   COMMON VALIDATE FUNCTION
-================================= */
 const validate = (schema) => (req, res, next) => {
   const { error } = schema.validate(req.body, { abortEarly: false });
 

@@ -19,21 +19,19 @@ import { authenticateJWT } from "./middlewares/auth.middleware.js";
 import testRoutes from "./routes/test.routes.js";
 import testEnrollmentRoutes from "./routes/TestEnrollment.routes.js";
 import testAttemptRoutes from "./routes/testAttempts.routes.js";
-import awsRouter from './routes/aws.route.js'
+import awsRouter from "./routes/aws.route.js";
 import resendMailRoutes from "./routes/resendMail.routes.js";
 import ScheduleInterviewRoutes from "./routes/scheduleInterview.routes.js";
-
-import cretificateRoutes from './routes/cretificate.routes.js'
-
+import certificateRoutes from "./routes/certificate.routes.js";
 
 import savedJobRoutes from "./routes/savedJob.routes.js";
 import passwordRoutes from "./routes/password.routes.js";
 import jobApplicationQuesition from "./routes/jobApplicationQuesition.route.js";
 // import deleteTestsRoutes from "./routes/delete-tests.routes.js";
 
-import ViolationRoutes  from "./routes/testViolation.routes.js";
+import ViolationRoutes from "./routes/testViolation.routes.js";
 import shareCandidate from "./routes/shareCandidate.routes.js";
-import tokenRoutes from "./routes/token.route.js"
+import tokenRoutes from "./routes/token.route.js";
 import categoryRoutes from "./routes/category.routes.js";
 const app = express();
 app.set("trust proxy", 1);
@@ -44,7 +42,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/permissions", permissionRoutes);
-app.use("/api/jobs", jobRoleRoutes);     // add new route inside it
+app.use("/api/jobs", jobRoleRoutes); // add new route inside it
 app.use("/api/job-categories", jobCategoryRoutes);
 app.use("/api/job-apply", jobapply);
 app.use("/api/skills", skillRoutes);
@@ -53,10 +51,10 @@ app.use("/api/experience", expereniceRoutes);
 app.use("/api/tests", testRoutes);
 app.use("/api/enrollments", testEnrollmentRoutes);
 app.use("/api/test-attempts", testAttemptRoutes);
-app.use('/api/candidate-profile', candidateProfileRoutes);
-app.use('/api/aws' , awsRouter)
+app.use("/api/candidate-profile", candidateProfileRoutes);
+app.use("/api/aws", awsRouter);
 app.use("/api/auth", resendMailRoutes);
-app.use("/api/certificates", cretificateRoutes);
+app.use("/api/cretificates", cretificateRoutes);
 // app.use("/api/tests", deleteTestsRoutes);
 app.use("/api/interviews", ScheduleInterviewRoutes);
 //   to: "agr.rbih@gmail.com",
