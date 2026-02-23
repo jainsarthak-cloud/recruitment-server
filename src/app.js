@@ -32,6 +32,7 @@ import ViolationRoutes  from "./routes/testViolation.routes.js";
 import shareCandidate from "./routes/shareCandidate.routes.js";
 import tokenRoutes from "./routes/token.route.js"
 import categoryRoutes from "./routes/category.routes.js";
+import productRoutes from "./routes/product.routes.js";
 const app = express();
 app.set("trust proxy", 1);
 app.use(express.json());
@@ -75,6 +76,7 @@ app.use("/api/blogs", blogPostRoutes);
 
 
 app.use("/api/categories", categoryRoutes);
+app.use("/api/product", productRoutes);
 
 
 app.use(errorHandler);
