@@ -6,11 +6,11 @@ class jobApplicationQuestionController {
 
   createApplicationQuestion = asyncHandler(async (req, res, next) => {
     try {
-      const jobId = req.params.id;
+      const jobId = req.params.id ;
       const { questions } = req.body;
-      if (!jobId) {
-        throw new AppError("Job is required for creating jobApplication Questions",400);
-      }
+      // if (!jobId) {
+      //   throw new AppError("Job is required for creating jobApplication Questions",400);
+      // }
       if (!Array.isArray(questions) || questions.length === 0) {
         return res
           .status(400)
@@ -36,9 +36,9 @@ class jobApplicationQuestionController {
   getApplicationQuestion = asyncHandler(async (req, res, next) => {
     try {
       let jobId = req.params.id;
-      if (!jobId) {
-        res.status(404).json({ message: "Job id not found" });
-      }
+      // if (!jobId) {
+      //   res.status(404).json({ message: "Job id not found" });
+      // }
       const questions =
         await jobApplicationQuestionService.getApplicationQuestion(jobId);
       return res.json({

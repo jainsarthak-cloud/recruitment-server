@@ -10,9 +10,9 @@ class jobApplicationQuestionService {
 
   async createApplicationQuestion(jobid, questions) {
     const jobExists = await jobRoleModel.findById(jobid);
-    if (!jobExists) {
-      throw new AppError("Job not found for creating questions", 400);
-    }
+    // if (!jobExists) {
+    //   throw new AppError("Job not found for creating questions", 400);
+    // }
     return await this.jobApplicationQuesRepo.createApplicationQuestion(
       jobid,
       questions
@@ -21,9 +21,9 @@ class jobApplicationQuestionService {
 
   async getApplicationQuestion(jobId) {
     const jobExists = await jobRoleModel.findById(jobId);
-    if (!jobExists) {
-      throw new AppError("Job not found", 404);
-    }
+    // if (!jobExists) {
+    //   throw new AppError("Job not found", 404);
+    // }
     return await this.jobApplicationQuesRepo.getApplicationQuestion(jobId);
   }
 

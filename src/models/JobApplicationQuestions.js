@@ -86,7 +86,7 @@ const questionSchema  = new mongoose.Schema(
       jobId:{
           type:mongoose.Schema.Types.ObjectId,
           required:true , 
-          ref:"JobRole",
+          // ref:"JobRole",
           index:true 
       }, 
       questions:[questionSchema]
