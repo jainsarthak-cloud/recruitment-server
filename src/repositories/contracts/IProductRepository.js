@@ -1,3 +1,5 @@
+// for prodcuts 
+
 class IProductRepository {
 async createProduct(productData) {
   throw new Error("Method not Implemented ")
@@ -12,6 +14,10 @@ async findAllProducts() {
 async updateProduct(id,productData) {
   throw new Error("Method not Implemented ")
 }
+// async deleteProduct(id) {
+//   throw new Error("Method not Implemented ")
+// }
+
 async deleteProduct(id) {
   throw new Error("Method not Implemented ")
 }
