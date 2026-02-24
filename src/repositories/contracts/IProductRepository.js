@@ -14,10 +14,9 @@ async findAllProducts() {
 async updateProduct(id,productData) {
   throw new Error("Method not Implemented ")
 }
-// async deleteProduct(id) {
-//   throw new Error("Method not Implemented ")
-// }
 
+
+// delete prodcut msg 
 async deleteProduct(id) {
   throw new Error("Method not Implemented ")
 }
