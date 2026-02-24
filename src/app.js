@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import blogRoutes from "./routes/savedBlog.route.js"
 import userRoutes from "./routes/user.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import roleRoutes from "./routes/role.routes.js";
@@ -75,7 +76,7 @@ app.use("/api/blogs", blogPostRoutes);
 
 
 app.use("/api/categories", categoryRoutes);
-
+app.use("/api/savedBlog",blogRoutes)
 
 app.use(errorHandler);
 export default app;
