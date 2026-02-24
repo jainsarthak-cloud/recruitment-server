@@ -3,7 +3,7 @@ import { successResponse } from "../utils/apiResponse.js";
 
 class BlogPostController {
   constructor() {
-    this.blogService = BlogPostService;
+    this.blogService = new BlogPostService(); 
   }
 
   createBlogPost = async (req, res, next) => {
@@ -15,23 +15,49 @@ class BlogPostController {
     }
   };
 
-  getBlogPosts = async (req, res, next) => {
+  async getBlogPosts(req, res, next) {
   try {
-    const query = req.validatedQuery || req.query;
-    
-    
-    const options = {
-      page: Number(query.page) || 1,
-      limit: Number(query.limit) || 10,
-      ...query
-    };
+    const options = req.validatedQuery || {};
 
-    const result = await this.blogService.getBlogPosts(options);
-    successResponse(res, result, "Blog posts retrieved successfully");
+    const data = await BlogPostService.getBlogPosts(options);
+
+    res.status(200).json({
+      success: true,
+      data,
+      message: "Blog posts retrieved successfully"
+    });
+
+    console.log("REQ BODY:", req.body); 
+
   } catch (error) {
     next(error);
   }
 };
+
+searchBlogs = async (req, res, next) => {
+  try {
+    const filters = req.body;
+
+    const options = {
+      limit: parseInt(req.query.limit) || 10,
+      skip: parseInt(req.query.skip) || 0,
+      page: parseInt(req.query.page) || 1
+    };
+
+    const data = await this.blogService.searchBlogs(filters, options);
+
+    res.status(200).json({
+      success: true,
+      data
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+
 
   
   getBlogPostById = async (req, res, next) => {
@@ -71,7 +97,7 @@ class BlogPostController {
   };
 }
 
-export default new BlogPostController();
+export default  BlogPostController;
 
 
 

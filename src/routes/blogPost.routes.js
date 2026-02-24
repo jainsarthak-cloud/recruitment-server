@@ -3,49 +3,60 @@ import BlogPostController from "../controllers/blogPost.controller.js";
 import authenticateJWT from "../middlewares/auth.middleware.js";
 import authorizeRoles from "../middlewares/role.middleware.js";
 import validateRequest from "../middlewares/validators/validateRequest.js";
-import { createBlogPostSchema, updateBlogPostSchema } from "../middlewares/validators/blogPost.validator.js";
+import { createBlogPostSchema } from "../middlewares/validators/blogPost.validator.js";
 import { blogListQuerySchema } from "../middlewares/validators/blogPost.query.validator.js";
+import { updateBlogPostSchema } from "../middlewares/validators/blogPost.validator.js";
+import { searchBlogSchema } from "../middlewares/validators/blogPost.validator.js";
 
 const router = Router();
+
+router.use(authenticateJWT);
+
+const blogPostController = new BlogPostController();
+
+
 
 
 router.get(
   "/",
   validateRequest(blogListQuerySchema, "query"),
-  BlogPostController.getBlogPosts
+  blogPostController.getBlogPosts
 );
 
 
-router.get("/slug/:slug", BlogPostController.getBlogPostBySlug);
+router.get("/slug/:slug", blogPostController.getBlogPostBySlug);
 
 
-router.get("/:id", BlogPostController.getBlogPostById);
+router.get("/:id", blogPostController.getBlogPostById);
 
 
 
 
 router.post(
   "/",
-  authenticateJWT,
   authorizeRoles("admin"),
   validateRequest(createBlogPostSchema),
-  BlogPostController.createBlogPost
+  blogPostController.createBlogPost
 );
 
-router.put(
+ router.post(
+  "/search",
+  validateRequest(searchBlogSchema),
+  blogPostController.searchBlogs
+
+);
+
+router.patch(
   "/:id",
-  authenticateJWT,
   authorizeRoles("admin"),
   validateRequest(updateBlogPostSchema),
-  BlogPostController.updateBlogPost
+  blogPostController.updateBlogPost
 );
 
 router.delete(
   "/:id",
-  authenticateJWT,
   authorizeRoles("admin"),
-  BlogPostController.deleteBlogPost
+  blogPostController.deleteBlogPost
 );
 
 export default router;
-

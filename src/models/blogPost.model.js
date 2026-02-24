@@ -12,9 +12,11 @@ const BlogPostSchema = new mongoose.Schema({
   
   slug: {
     type: String,
+    required: true,
     unique: true,
+    trim: true,
     lowercase: true,
-    sparse: true
+    index: true
   },
 
   subtitle: {
@@ -29,9 +31,17 @@ const BlogPostSchema = new mongoose.Schema({
   },
 
   category: {
-    type: [String],
-    default: []
+     type:mongoose.Schema.Types.ObjectId,
+     ref: 'JobCategory',
+     required: true,
+     index: true
   },
+
+  technologies: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Skill',
+  index: true
+  }],
 
   hero: {
     imageUrl: { type: String, required: true },
@@ -70,18 +80,16 @@ const BlogPostSchema = new mongoose.Schema({
   allowNewsletter: {
     type: Boolean,
     default: true
+  },
+  status :{
+    type: String,
+    enum: ['draft', 'published', 'archived'],
+    default: 'draft',
+    required: true
   }
+  
 }, { timestamps: true });
 
-
-
-
-BlogPostSchema.pre('validate', function(next) {
-  if (this.title && !this.slug) {
-    this.slug = slugify(this.title, { lower: true, strict: true });
-  }
-  next();
-});
 const BlogPost = mongoose.model('BlogPost', BlogPostSchema);
 
 export default BlogPost;
