@@ -16,7 +16,8 @@ async updateProduct(id,productData) {
 }
 
 
-// delete prodcut msg 
+
+// delete product message 
 async deleteProduct(id) {
   throw new Error("Method not Implemented ")
 }
