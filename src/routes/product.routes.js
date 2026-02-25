@@ -10,10 +10,10 @@ const productController = new ProductController();
 
 productRouter.post("/" ,authenticateJWT,productController.createProduct)
 
-productRouter.get("/" ,productController.getAllProducts)
+productRouter.get("/" , authenticateJWT, productController.getAllProducts)
 
 
-productRouter.get("/:id", productController.getProduct)
+productRouter.get("/:id",authenticateJWT, productController.getProduct)
 
 productRouter.patch("/:id", authenticateJWT,productController.updateProduct)
 

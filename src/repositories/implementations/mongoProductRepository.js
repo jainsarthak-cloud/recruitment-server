@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import IProductRepository from "../contracts/IProductRepository.js";
-import { productModel } from "../../models/productModel.js";
+import { productModel } from "../../models/product.model.js";
 import { AppError } from "../../utils/errors.js";
 
 class MongoProductRepository extends IProductRepository {

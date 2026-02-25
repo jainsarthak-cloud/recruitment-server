@@ -1,4 +1,4 @@
-// for prodcuts 
+
 
 class IProductRepository {
 async createProduct(productData) {
@@ -15,12 +15,10 @@ async updateProduct(id,productData) {
   throw new Error("Method not Implemented ")
 }
 
-
-
-// delete product message 
 async deleteProduct(id) {
   throw new Error("Method not Implemented ")
 }
+
 
 }
 export default IProductRepository

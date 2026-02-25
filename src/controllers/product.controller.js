@@ -29,7 +29,7 @@ class ProductController {
     res.status(200).json({
       success: true,
       data: product,
-      message: "Product updated successfully",
+      message: "Product fetched  successfully",
     });
 
 
