@@ -7,7 +7,7 @@ class MongoSavedBlogRepository extends ISavedBlogRepository {
 
   async save(data) {
     try {
-      const saved = new SavedBlogModel(data);
+      const saved = new SavedBlog(data);
       return await saved.save();
     } catch (error) {
       if (error.code === 11000) {
