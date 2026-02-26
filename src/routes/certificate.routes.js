@@ -7,28 +7,34 @@ import {
 import { authenticateJWT } from "../middlewares/auth.middleware.js";
 import { authorize } from "../middlewares/role.middleware.js";
 
+// ✅ Reuse existing upload middleware — just import the new uploadExcel
+import { uploadExcel } from "../middlewares/multer.middleware.js";
+
 const router = express.Router();
 
 router.use(authenticateJWT);
 router.use(authorize("admin"));
 
-// Create Certificate
+// ─── Existing Routes (unchanged) ────────────────────────────────────────────
 router.post("/", createCertificateValidator, certificateController.create);
-
-// Find All Cretificate
 router.get("/", certificateController.listAll);
-
-// Find By ID
 router.get("/:id", certificateController.get);
-
-// Update Cretificate
 router.put(
   "/update/:id",
   updateCertificateValidator,
   certificateController.update,
 );
-
-// Delete Cretificate
 router.delete("/:id", certificateController.delete);
+
+// ─── NEW: Bulk Certificate Generation ───────────────────────────────────────
+// Admin uploads Excel file → parsed → certificates generated → emails sent
+router.post(
+  "/generate-bulk",
+  uploadExcel, // multer parses xlsx into req.file.buffer
+  certificateController.generateBulk,
+);
+
+// Admin polls job progress
+router.get("/job-status/:jobId", certificateController.getJobStatus);
 
 export default router;

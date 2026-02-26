@@ -65,14 +65,14 @@ app.use("/api/interviews", ScheduleInterviewRoutes);
 
 app.use("/api/saved-jobs", savedJobRoutes);
 app.use("/api/password", passwordRoutes);
-app.use("/api/job-questions",jobApplicationQuesition)
+app.use("/api/job-questions", jobApplicationQuesition);
 
-app.use('/api/ai/', ViolationRoutes)
-app.use('/api/share', shareCandidate);
-app.use("/api/token",tokenRoutes)
+app.use("/api/ai/", ViolationRoutes);
+app.use("/api/share", shareCandidate);
+app.use("/api/token", tokenRoutes);
 
 app.use("/api/categories", categoryRoutes);
-
+app.use("/api/certificates", certificateRoutes);
 
 app.use(errorHandler);
 export default app;
