@@ -21,10 +21,10 @@ class SavedBlogController {
 
   getSavedBlogs = async (req, res, next) => {
     try {
-      const options = {
-        limit: parseInt(req.query.limit) || 10,
-        skip: parseInt(req.query.skip) || 0
-      };
+     const options = {
+     limit: parseInt(req.query.limit) || 10,
+     page: parseInt(req.query.page) || 1
+    };
 
       const data = await this.savedService.getAllSavedBlogs(
         req.userId,

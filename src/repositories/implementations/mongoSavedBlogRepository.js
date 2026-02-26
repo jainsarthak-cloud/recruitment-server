@@ -2,6 +2,7 @@ import ISavedBlogRepository from "../contracts/ISavedBlogRepository.js";
 import SavedBlog from "../../models/savedBlog.model.js";
 import { AppError } from "../../utils/errors.js";
 
+
 class MongoSavedBlogRepository extends ISavedBlogRepository {
 
   async save(data) {
@@ -31,9 +32,14 @@ class MongoSavedBlogRepository extends ISavedBlogRepository {
     return await SavedBlog.countDocuments(filter);
   }
 
-  async delete(filter) {
-    return await SavedBlog.findOneAndDelete(filter);
-  }
+  async deleteSavedBlog(userId, blogId) {
+
+  return await SavedBlog.findOneAndDelete({
+    userId,
+    blogId
+  });
+
+}
 
   async findOne(filter) {
     return await SavedBlog.findOne(filter);

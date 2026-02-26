@@ -1,6 +1,7 @@
 import { AppError } from "../utils/errors.js";
 import MongoSavedBlogRepository from "../repositories/implementations/mongoSavedBlogRepository.js";
 
+
 class SavedBlogService {
   constructor() {
     this.savedRepo = new MongoSavedBlogRepository();
@@ -17,7 +18,8 @@ class SavedBlogService {
   }
 
   async getAllSavedBlogs(userId, options = {}) {
-    const { limit = 10, skip = 0 } = options;
+    const { limit = 10, page = 1 } = options;
+    const skip = (page - 1) * limit;
 
     const filter = { userId };
 
@@ -29,24 +31,32 @@ class SavedBlogService {
     return {
       blogs,
       pagination: {
-        total,
-        skip,
-        limit,
-        hasNext: skip + limit < total,
-        hasPrev: skip > 0
-      }
+      total,
+      page,
+      limit,
+      skip,
+      hasNext: skip + limit < total,
+      hasPrev: page > 1
+}
     };
   }
 
   async deleteSavedBlog(userId, blogId) {
-    const deleted = await this.savedRepo.delete({ userId, blogId });
 
-    if (!deleted) {
-      throw new AppError("Saved blog not found", 404);
-    }
+  const deleted = await this.savedRepo.deleteSavedBlog(
+    userId,
+    blogId
+  );
 
-    return { success: true, message: "Saved blog removed successfully" };
+  if (!deleted) {
+    throw new AppError("Saved blog not found", 404);
   }
+
+  return {
+    success: true,
+    message: "Blog unsaved successfully"
+  };
+}
 }
 
 export default SavedBlogService;
