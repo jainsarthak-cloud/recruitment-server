@@ -15,6 +15,9 @@ class CertificateController {
         excelFileBuffer: excelFile?.buffer,
       });
 
+      console.log(templateUrl)
+      console.log(excelFile)
+
       return res.status(200).json({
         success: true,
         data: result,

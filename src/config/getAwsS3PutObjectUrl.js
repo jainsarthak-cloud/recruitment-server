@@ -30,6 +30,7 @@ export const putObject = async (req, res) => {
       Key: `uploads/${fileName}`,
       ContentType: contentType,
     });
+
     const getUrl = await getSignedUrl(s3Client, command);
     res.status(200).json(getUrl);
   } catch (error) {

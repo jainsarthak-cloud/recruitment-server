@@ -24,18 +24,29 @@ class BulkCertificateGenerator {
     }
   }
 
+  // async initializeTemplate() {
+  //   const localPath = path.join(__dirname, "certificate.html");
+
+  //   if (!fs.existsSync(localPath)) {
+  //     const response = await fetch(this.s3TemplateUrl);
+  //     const html = await response.text();
+  //     fs.writeFileSync(localPath, html, "utf-8");
+  //   }
+
+  //   const templateHtml = fs.readFileSync(localPath, "utf-8");
+  //   this.cachedTemplate = Handlebars.compile(templateHtml);
+  // }
+
   async initializeTemplate() {
-    const localPath = path.join(__dirname, "certificate.html");
+  try {
+    const response = await axios.get(this.s3TemplateUrl);
+    const html = response.data;
 
-    if (!fs.existsSync(localPath)) {
-      const response = await fetch(this.s3TemplateUrl);
-      const html = await response.text();
-      fs.writeFileSync(localPath, html, "utf-8");
-    }
-
-    const templateHtml = fs.readFileSync(localPath, "utf-8");
-    this.cachedTemplate = Handlebars.compile(templateHtml);
+    this.cachedTemplate = Handlebars.compile(html);
+  } catch (error) {
+    throw new Error("Failed to fetch template from S3: " + error.message);
   }
+}
 
   normalizeRecord(record) {
     const normalized = {};
@@ -59,7 +70,11 @@ class BulkCertificateGenerator {
       organizationName: student["Organization"] || "",
       startDate: formatDate(student["Start Date"]),
       endDate: formatDate(student["End Date"]),
+      //  add feature
+      Feature: student["Feature"] || ""
     });
+
+    console.log(finalHtml)
 
     await page.setContent(finalHtml, { waitUntil: "load", timeout: 0 });
 
