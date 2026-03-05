@@ -1,26 +1,25 @@
 import { CandidateProfile } from "../../models/candidateProfile.model.js";
 import shareCandidateModel from "../../models/shareCandidate.model.js";
-import IShareCandidate from "../contracts/IShareCandidate.js";
+import IshareCandidate from "../contracts/IShareCandidate.js";
 import mongoose from 'mongoose';
 import {AppError} from "../../utils/errors.js";
-import MongoCandidateProfileRepository from "./mongoCandidateProfileRepository.js";
 
-
-class MongoShareCandidate extends IShareCandidate {
+class MongoShareCandidate extends IshareCandidate {
 
   // create group and generate share linkk
   async createCandidate(users) {
-
    try {
-     const share = await shareCandidateModel.create({  
+     const share = await shareCandidateModel.create({  //
       groupName: users.groupName,
-      selectedUsers: users.selectedUsers, 
+      selectedUsers: users.selectedUsers, // Assuming this is an array of user IDs
     });
 
     const shareLink = `hire.sheriyans.com/api/share/${share._id}`; // Construct the shareable link using the share ID
     return {
-      shareLink, 
-      group: share 
+      shareLink, // You can also return the share ID if needed
+      group: share  // Return the created share document
+
+
    } 
   } 
   catch (error) {
@@ -59,6 +58,7 @@ class MongoShareCandidate extends IShareCandidate {
             groupName: 1,
             createdAt: 1,
             updatedAt: 1,
+            // 👇 THIS IS THE NEW PART
             // It calculates the size of the 'selectedUsers' array instantly
             memberCount: { $size: { $ifNull: ["$selectedUsers", []] } } 
           }
@@ -170,73 +170,131 @@ class MongoShareCandidate extends IShareCandidate {
 
 
       const share = await shareCandidateModel.findById(shareId)
-      .populate('selectedUsers', 'firstName lastName email role phoneNumber address'); // Populate the selectedUsers with their details
+      .populate('selectedUsers', 'firstName lastName email role');
 
       if (!share) {
          throw new AppError('Invalid or expired link', 404);
-
       }
 
-        
-      
-      const candidateRepo = new MongoCandidateProfileRepository();
+      const profiles = await CandidateProfile.aggregate([
+        {
+          $match: {
+            userId: {
+              $in: share.selectedUsers.map(id => new mongoose.Types.ObjectId(id)),
+            },
+          },
+        },
 
-      const userIds = share.selectedUsers.map(user => user._id)
+        // Populate user
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user',
+          },
+        },
+        { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
 
-     const pipeline = candidateRepo._getProfileAggregationPipeline(userIds);
+        // Populate skills
+        {
+          $lookup: {
+            from: 'skills',
+            localField: 'skills',
+            foreignField: '_id',
+            as: 'skillDocs',
+          },
+        },
 
-     const fetchedProfiles = await CandidateProfile.aggregate(pipeline);
+        // Populate experiences
+        {
+          $lookup: {
+            from: 'experiences',
+            localField: '_id',
+            foreignField: 'candidateId',
+            as: 'experiences',
+          },
+        },
 
-     const completeProfiles = share.selectedUsers.map((user) => {
-        const foundProfile = fetchedProfiles.find(
-          (p) => p.userId.toString() === user._id.toString()
-        );
+        // Sort experiences
+        {
+          $addFields: {
+            experiences: {
+              $sortArray: {
+                input: '$experiences',
+                sortBy: { isCurrent: -1, startDate: -1 },
+              },
+            },
+          },
+        },
 
-        if (foundProfile) {
-          return foundProfile;
-        }
-    
-    
- 
-    return{
-      userId: user._id,
-      user:{
-        id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      address: user.address,
-      
+        // Final shape
+        {
+          $project: {
+            _id: 1,
+            userId: 1,
+            availability: 1,
+            linkedinUrl: 1,
+            githubUrl: 1,
+            portfolioUrl: 1,
+            highestEducation: 1,
+            resumeFile: 1,
+            resumeScore: 1,
+            createdAt: 1,
+            updatedAt: 1,
 
-    },
+            user: {
+              _id: '$user._id',
+              firstName: '$user.firstName',
+              lastName: '$user.lastName',
+              email: '$user.email',
+            },
 
-   
-   socialLinks: { linkedin: "", github: "", portfolio: "", twitter: "" },
-    resumeFile: null ,// or you can set it to a default value if needed
-    experiences: [],
-    skills:[],
-    contactInfo: { phone: user.phoneNumber || "", address: user.address || "" }
-  };
-});
+            skills: {
+              $map: {
+                input: '$skillDocs',
+                as: 'skill',
+                in: {
+                  _id: '$$skill._id',
+                  name: '$$skill.name',
+                },
+              },
+            },
 
-//const profiles = (await Promise.all(profilesPromises)).filter(Boolean);
+            experiences: {
+              $map: {
+                input: '$experiences',
+                as: 'exp',
+                in: {
+                  _id: '$$exp._id',
+                  company: '$$exp.company',
+                  title: '$$exp.title',
+                  location: '$$exp.location',
+                  description: '$$exp.description',
+                  startDate: '$$exp.startDate',
+                  endDate: '$$exp.endDate',
+                  isCurrent: '$$exp.isCurrent',
+                },
+              },
+            },
+          },
+        },
+      ]);
 
-    
+      const finalData = profiles.length > 0 ? profiles : share.selectedUsers;
+      // 3. Send response
     
       return ({ 
             groupName: share.groupName,
-            count :completeProfiles.length,
-
-
-           data: completeProfiles
+            count: share.selectedUsers.length,
+            data: share.selectedUsers  
         }) 
       
       
       // Return count and data in the response because the frontend needs both to display the data and show the count of shared candidates.
     } catch (error) {
       console.error(error);
-      throw new AppError(  `Failed to fetch shared candidates: ${error.message}`,   500,  error );
+      throw new AppError(  `Failed to update test attempt: ${error.message}`,   500,  error );
     }
   }
 }

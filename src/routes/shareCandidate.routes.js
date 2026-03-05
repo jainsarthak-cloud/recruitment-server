@@ -7,12 +7,18 @@ import { authenticateJWT } from '../middlewares/auth.middleware.js';
 // import { createShare, getSharedCandidates } from '../controllers/shareCandidate.controller.js';
 
 const router = express.Router();
+
+
+
 // router.get('/:shareId', ShareCandidateController.shareShareCandidate);
 const shareCandidateController = new ShareCandidateController();
 
 router.get('/', shareCandidateController.getAllGroups);
 
 router.post('/', authenticateJWT,authorize('admin'), shareCandidateController.createShareCandidate);
+
+
+
 
 // for group name update
 
