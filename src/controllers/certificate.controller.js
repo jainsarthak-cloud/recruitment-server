@@ -5,28 +5,59 @@ class CertificateController {
     this.certificateService = new CertificateService();
   }
 
+
+  
   generateAndSend = async (req, res, next) => {
-    try {
-      const excelFile = req.file;
-      const { templateUrl } = req.body;
+  try {
+    const excelFile = req.file;
+    const { templateUrl } = req.body;
 
-      const result = await this.certificateService.generateAndSendCertificates({
-        templateS3Url: templateUrl,
-        excelFileBuffer: excelFile?.buffer,
-      });
-
-      console.log(templateUrl)
-      console.log(excelFile)
-
-      return res.status(200).json({
-        success: true,
-        data: result,
-        message: "Certificates generated, uploaded and queued for email delivery",
-      });
-    } catch (err) {
-      next(err);
+    // Validation: Check agar file exist karti hai
+    if (!excelFile) {
+      throw new AppError("Excel file is missing", 400);
     }
-  };
+
+    // Service call karein
+    const result = await this.certificateService.generateAndSendCertificates({
+      templateS3Url: templateUrl,
+      excelFileBuffer: excelFile?.buffer,
+    });
+
+    // Ab yahan success message return karein
+    return res.status(200).json({
+      success: true,
+      data: result,
+      message: "Certificates generated and sent successfully",
+    });
+  } catch (err) {
+    // Agar Service layer mein koi validation error (jaise missing email) hua, 
+    // toh next(err) use catch karega aur client ko 400 error bhejega.
+    next(err); 
+  }
+};
+
+  // generateAndSend = async (req, res, next) => {
+  //   try {
+  //     const excelFile = req.file;
+  //     const { templateUrl } = req.body;
+
+  //     const result = await this.certificateService.generateAndSendCertificates({
+  //       templateS3Url: templateUrl,
+  //       excelFileBuffer: excelFile?.buffer,
+  //     });
+
+  //     console.log(templateUrl)
+  //     console.log(excelFile)
+
+  //     return res.status(200).json({
+  //       success: true,
+  //       data: result,
+  //       message: "Certificates generated, uploaded and queued for email delivery",
+  //     });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // };
 
   create = async (req, res, next) => {
     try {
