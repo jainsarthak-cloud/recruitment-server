@@ -74,7 +74,7 @@ class BulkCertificateGenerator {
       Feature: student["Feature"] || ""
     });
 
-    console.log(finalHtml)
+    // console.log(finalHtml)
 
     await page.setContent(finalHtml, { waitUntil: "load", timeout: 0 });
 
@@ -93,7 +93,13 @@ class BulkCertificateGenerator {
     try {
       await this.initializeTemplate();
       const workbook = xlsx.readFile(this.excelPath);
-      const students = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+
+      // const students = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+
+      const students = xlsx.utils.sheet_to_json(
+  workbook.Sheets[workbook.SheetNames[0]],
+  { raw: false }
+);
 
       browser = await puppeteer.launch({
         headless: "new",

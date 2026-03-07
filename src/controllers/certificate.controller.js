@@ -36,28 +36,7 @@ class CertificateController {
   }
 };
 
-  // generateAndSend = async (req, res, next) => {
-  //   try {
-  //     const excelFile = req.file;
-  //     const { templateUrl } = req.body;
 
-  //     const result = await this.certificateService.generateAndSendCertificates({
-  //       templateS3Url: templateUrl,
-  //       excelFileBuffer: excelFile?.buffer,
-  //     });
-
-  //     console.log(templateUrl)
-  //     console.log(excelFile)
-
-  //     return res.status(200).json({
-  //       success: true,
-  //       data: result,
-  //       message: "Certificates generated, uploaded and queued for email delivery",
-  //     });
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // };
 
   create = async (req, res, next) => {
     try {
