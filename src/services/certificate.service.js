@@ -64,14 +64,16 @@ class CertificateService {
 
   // Column aur Data Check
   const hasEmailColumn = rows[0].hasOwnProperty("Email Address");
-  const missingEmailRow = rows.find(r => !r["Email Address"] || String(r["Email Address"]).trim() === "");
+  // const missingEmailRow = rows.find(r => !r["Email Address"] || String(r["Email Address"]).trim() === "");
 
-  if (!hasEmailColumn) {
-    throw new AppError("Excel file is missing the 'Email Address' column.", 400);
-  }
-  if (missingEmailRow) {
-    throw new AppError("Some rows do not contain email addresses. Certificates cannot be sent.", 400);
-  }
+  // if (!hasEmailColumn) {
+  //   throw new AppError("Excel file is missing the 'Email Address' column.", 400);
+  // }
+  // if (missingEmailRow) {
+  //   throw new AppError("Some rows do not contain email addresses. Certificates cannot be sent.", 400);
+  // }
+
+
 
   // 2. Validation pass hone par hi process shuru karein
   await fs.writeFile(PDF_EXCEL_PATH, excelFileBuffer);
@@ -91,10 +93,29 @@ class CertificateService {
   // ... [Baaki ka logic jahan aap loop chala rahe hain] ...
   const result = { totalRows: rows.length, successCount: 0, failedCount: 0, generated: [], failed: [] };
 
+  // for (const { studentName, pdfBuffer } of generatedResults) {
+  //   // Ab yahan email validate karne ki zarurat nahi kyunki upar ho chuki hai
+  //   const row = rows.find(r => r["Student Name"] === studentName);
+  //   const studentEmail = row["Email Address"];
+
+  //   this for loop work when email is missing .
+
   for (const { studentName, pdfBuffer } of generatedResults) {
-    // Ab yahan email validate karne ki zarurat nahi kyunki upar ho chuki hai
-    const row = rows.find(r => r["Student Name"] === studentName);
-    const studentEmail = row["Email Address"];
+  const row = rows.find(r => r["Student Name"] === studentName);
+
+  const studentEmail = row ? row["Email Address"] : null;
+
+  // skip if email missing
+  if (!studentEmail || String(studentEmail).trim() === "") {
+    result.failedCount++;
+    result.failed.push({
+      studentName,
+      error: "Email missing - skipped"
+    });
+    continue;
+  }
+
+  console.log(result)
 
     const certificateUrl = await this.uploadPdfToS3({ pdfBuffer, studentName });
 
@@ -111,55 +132,6 @@ class CertificateService {
   if (existsSync(PDF_EXCEL_PATH)) await fs.unlink(PDF_EXCEL_PATH);
   return result;
 }
-
-  // async generateAndSendCertificates({ templateS3Url, excelFileBuffer }) {
-  //   if (!templateS3Url || !excelFileBuffer) {
-  //     throw new AppError("Template URL and excel file are required", 400);
-  //   }
-
-  //   await fs.writeFile(PDF_EXCEL_PATH, excelFileBuffer);
-
-  //   const generator = new BulkCertificateGenerator({
-  //     s3TemplateUrl: templateS3Url,
-  //     excelPath: PDF_EXCEL_PATH
-  //   });
-
-  //   let generatedResults;
-  //   try {
-  //     generatedResults = await generator.generateAllCertificates();
-  //   } catch (err) {
-  //     throw new AppError(`PDF Generation Logic failed: ${err.message}`, 500);
-  //   }
-
-  //   const workbook = xlsx.read(excelFileBuffer, { type: "buffer" });
-  //   const rows = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: "" });
-  //   const result = { totalRows: rows.length, successCount: 0, failedCount: 0, generated: [], failed: [] };
-
-  //   for (const { studentName, pdfBuffer } of generatedResults) {
-  //     try {
-  //       const row = rows.find(r => r["Student Name"] === studentName);
-  //       const studentEmail = row ? row["Email Address"] : null;
-
-  //       const certificateUrl = await this.uploadPdfToS3({ pdfBuffer, studentName });
-
-  //       await emailQueue.add("certificate-email", {
-  //         to: studentEmail,
-  //         studentName,
-  //         certificateUrl
-  //       });
-
-  //       result.successCount++;
-  //       result.generated.push({ studentName, email: studentEmail, certificateUrl });
-  //     } catch (error) {
-  //       result.failedCount++;
-  //       result.failed.push({ studentName, error: error.message });
-  //     }
-  //   }
-
-  //   if (existsSync(PDF_EXCEL_PATH)) await fs.unlink(PDF_EXCEL_PATH);
-
-  //   return result;
-  // }
 
   // --- STANDARD CRUD METHODS ---
 
