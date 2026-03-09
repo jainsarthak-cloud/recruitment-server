@@ -115,8 +115,6 @@ class CertificateService {
     continue;
   }
 
-  console.log(result)
-
     const certificateUrl = await this.uploadPdfToS3({ pdfBuffer, studentName });
 
     await emailQueue.add("certificate-email", {
