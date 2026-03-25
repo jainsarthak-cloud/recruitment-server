@@ -32,11 +32,18 @@ import ViolationRoutes  from "./routes/testViolation.routes.js";
 import shareCandidate from "./routes/shareCandidate.routes.js";
 import tokenRoutes from "./routes/token.route.js"
 import categoryRoutes from "./routes/category.routes.js";
+
+import piyushRoutes from "./routes/piyush.user.routes.js";
+
 const app = express();
 app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
+
+app.use("/api/userspiyush", piyushRoutes);
+
+
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/roles", roleRoutes);
