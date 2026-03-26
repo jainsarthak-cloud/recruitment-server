@@ -7,14 +7,12 @@ import {
   deleteProduct,
 } from "../controllers/product.controller.js";
 
-import { asyncHandler } from "../utils/asyncHandler.js";
-
 const router = express.Router();
 
-router.post("/", asyncHandler(createProduct));
-router.get("/", asyncHandler(getAllProducts));
-router.get("/:id", asyncHandler(getProductById));
-router.put("/:id", asyncHandler(updateProduct));
-router.delete("/:id", asyncHandler(deleteProduct));
+router.post("/", createProduct);
+router.get("/", getAllProducts);
+router.get("/:id", getProductById);
+router.put("/:id", updateProduct);
+router.delete("/:id", deleteProduct);
 
 export default router;

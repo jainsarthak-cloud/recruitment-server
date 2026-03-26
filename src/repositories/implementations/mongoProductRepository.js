@@ -2,29 +2,47 @@ import Product from "../../models/product.model.js";
 import { AppError } from "../../utils/errors.js";
 import IProductRepository from "../contracts/IProductRepository.js";
 
-class mongoProductRepository extends IProductRepository {
+class MongoProductRepository extends IProductRepository {
   async createProduct(data) {
     try {
       const product = new Product(data);
       return await product.save();
     } catch (error) {
-      console.log(error)
-      throw new AppError("failed to create product", 500);
+      throw new AppError("Failed to create product", 500);
     }
   }
 
   async getAllProducts() {
-    return await Product.find();
+    try {
+      return await Product.find();
+    } catch (error) {
+      throw new AppError("Failed to fetch products", 500);
+    }
   }
 
   async getProductById(id) {
-    return await Product.findById(id);
+    try {
+      return await Product.findById(id);
+    } catch (error) {
+      throw new AppError("Invalid product ID", 400);
+    }
   }
+
   async updateProduct(id, data) {
-    return await Product.findByIdAndUpdate(id, data, { new: true });
+    try {
+      return await Product.findByIdAndUpdate(id, data, { new: true });
+    } catch (error) {
+      throw new AppError("Failed to update product", 500);
+    }
   }
+
   async deleteProduct(id) {
-    return await Product.findByIdAndDelete(id);
+    try {
+      return await Product.findByIdAndDelete(id);
+    } catch (error) {
+      throw new AppError("Failed to delete product", 500);
+    }
   }
 }
-export default mongoProductRepository;
+
+export default MongoProductRepository;

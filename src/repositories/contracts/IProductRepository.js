@@ -1,7 +1,6 @@
 class IProductRepository {
-  catch(error) {
-    console.error("CREATE PRODUCT ERROR:", error);
-    throw new AppError(error.message || "Failed to create product", 500);
+  async createProduct(data) {
+    throw new Error("Method not implemented");
   }
 
   async getAllProducts() {

@@ -1,23 +1,30 @@
-import mongoProductRepository from "../repositories/implementations/mongoProductRepository.js";
 import { AppError } from "../utils/errors.js";
 
 class ProductService {
-  constructor() {
-    this.productRepo = new mongoProductRepository();
+  constructor(productRepo) {
+    this.productRepo = productRepo; // ✅ dependency injection
   }
 
   async createProduct(data) {
+    // ✅ basic validation at service level (optional safety)
+    if (!data || !data.title || !data.price) {
+      throw new AppError("Invalid product data", 400);
+    }
+
     return await this.productRepo.createProduct(data);
   }
+
   async getAllProducts() {
-    return this.productRepo.getAllProducts();
+    return await this.productRepo.getAllProducts();
   }
 
-  async getProductsById(id) {
+  async getProductById(id) {
     const product = await this.productRepo.getProductById(id);
+
     if (!product) {
-      throw new AppError("Product not found ", 404);
+      throw new AppError("Product not found", 404);
     }
+
     return product;
   }
 
@@ -25,16 +32,19 @@ class ProductService {
     const product = await this.productRepo.updateProduct(id, data);
 
     if (!product) {
-      throw new AppError("Product now found", 404);
+      throw new AppError("Product not found", 404); // ✅ fixed typo
     }
+
     return product;
   }
 
   async deleteProduct(id) {
     const product = await this.productRepo.deleteProduct(id);
+
     if (!product) {
       throw new AppError("Product not found", 404);
     }
+
     return product;
   }
 }
