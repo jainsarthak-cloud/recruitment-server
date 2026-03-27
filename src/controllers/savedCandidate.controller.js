@@ -4,8 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 class SavedCandidateController {
   saveCandidate = asyncHandler(async (req, res) => {
     const { candidateId } = req.params;
-    // const savedBy = req.userId; 
-    const savedBy = req.body.userId; // Agar savedBy body me diya gaya hai toh use karo, warna userId se le lo
+    const savedBy = req.userId;
 
     const saved = await savedCandidateService.saveCandidate(savedBy, candidateId);
 
@@ -17,8 +16,7 @@ class SavedCandidateController {
   });
 
   getSavedCandidates = asyncHandler(async (req, res) => {
-    // const savedBy = req.userId;
-         const savedBy = req.body.userId;
+    const savedBy = req.userId;
  
     const result = await savedCandidateService.getSavedCandidates(
       savedBy,
@@ -32,8 +30,7 @@ class SavedCandidateController {
 
   removeSavedCandidate = asyncHandler(async (req, res) => {
     const { candidateId } = req.params;
-    // const savedBy = req.userId;
-       const savedBy = req.body.userId;
+    const savedBy = req.userId;
 
     await savedCandidateService.removeSavedCandidate(savedBy, candidateId);
 
@@ -45,11 +42,10 @@ class SavedCandidateController {
 
   getSavedCandidateStatus = asyncHandler(async (req, res) => {
     const { candidateId } = req.params;
-    // const savedBy = req.userId;
-       const savedBy = req.body.userId;
+    const savedBy = req.userId;
     
 
-    const status = await savedCandidateService.getSavedCandidateStatus(
+    const status = await savedCandidateService.checkCandidateSavedStatus(
       savedBy,
       candidateId
     );

@@ -4,6 +4,8 @@ import savedCandidateController from "../controllers/savedCandidate.controller.j
 
 const router = express.Router();
 
+router.use(authenticateJWT);
+
 // Route to save a candidate
 // POST /api/saved-candidates/:candidateId
 // Request body: None

@@ -52,8 +52,6 @@ class MongoSavedCandidateRepository extends ISavedCandidateRepository {
         })
         .lean();
 
-        console.log("Saved Candidates Fetched:", savedCandidates);
-        
       const data = savedCandidates.map((item) => ({
         _id: item._id,
         savedBy: item.savedBy,
@@ -61,6 +59,7 @@ class MongoSavedCandidateRepository extends ISavedCandidateRepository {
         createdAt: item.createdAt,
         candidate: item.candidateId
           ? {
+              id: item.candidateId._id,
               firstName: item.candidateId.firstName,
               lastName: item.candidateId.lastName,
               email: item.candidateId.email,
@@ -95,7 +94,7 @@ class MongoSavedCandidateRepository extends ISavedCandidateRepository {
     }
   }
 
-  async isCandidateSaved(savedBy, candidateId) {
+  async checkCandidateSavedStatus(savedBy, candidateId) {
     try {
       const doc = await savedCandidateModel.findOne({
         savedBy: this._toObjectId(savedBy, "savedBy"),

@@ -7,6 +7,14 @@ constructor() {
 }
 
   async saveCandidate(savedBy, candidateId) {
+    const isAlreadySaved = await this.savedCandidateRepo.checkCandidateSavedStatus(
+      savedBy,
+      candidateId
+    );
+    if (isAlreadySaved) {
+      throw new AppError("Candidate already bookmarked", 409);
+    }
+
     const saved = await this.savedCandidateRepo.saveCandidate(savedBy, candidateId);
     if (!saved) {
       throw new AppError("Failed to save candidate", 500);
@@ -26,8 +34,8 @@ constructor() {
     return removed;
   }
 
-  async getSavedCandidateStatus(savedBy, candidateId) {
-    const isSaved = await this.savedCandidateRepo.isCandidateSaved(savedBy, candidateId);
+  async checkCandidateSavedStatus(savedBy, candidateId) {
+    const isSaved = await this.savedCandidateRepo.checkCandidateSavedStatus(savedBy, candidateId);
     return { isSaved };
   }
 }

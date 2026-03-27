@@ -11,7 +11,7 @@ export default class ISavedCandidateRepository {
     throw new Error("Method not implemented");
   }
 
-  isCandidateSaved(savedBy, candidateId) {
+  checkCandidateSavedStatus(savedBy, candidateId) {
     throw new Error("Method not implemented");
   }
 }
