@@ -35,10 +35,10 @@ class ProductService {
     async updateProduct(productId, productData) {
         const updateBody = {};
 
-        if (productData.title) upadateBody.title = productData.title;
-        if (productData.description) upadateBody.description = productData.description;
-        if (productData.price) upadateBody.price = productData.price;
-        if (productData.category) upadateBody.category = productData.category;
+        if (productData.title) updateBody.title = productData.title;
+        if (productData.description) updateBody.description = productData.description;
+        if (productData.price) updateBody.price = productData.price;
+        if (productData.category) updateBody.category = productData.category;
 
 
         const product = await this.productRepository.updateProduct(productId, updateBody);

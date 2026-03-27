@@ -46,7 +46,7 @@ class MongoProductRepository extends IProductRepository {
         try {
             const product = await Product.findByIdAndUpdate(productId, {
                 $set: productData
-            }, { new: true });
+            }, { new: true, runValidators: true });
 
             return product;
         } catch (error) {

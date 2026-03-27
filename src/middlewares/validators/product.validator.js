@@ -7,6 +7,9 @@ const productSchema = Joi.object({
         "string.max": "Title must be at most 10 character long",
         "any.required": "Title is required"
     }),
+    image: Joi.string().required().messages({
+        "any.required": "Image is required"
+    }),
     description: Joi.string().optional().trim().min(5).max(15),
     price: Joi.number().required().min(0).messages({
         "number.base": "Price must be a number",

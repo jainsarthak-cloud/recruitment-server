@@ -6,10 +6,10 @@ import { productValidator, updateProductValidator } from "../middlewares/validat
 const router = express.Router();
 
 router.post("/create", authenticateJWT, productValidator, productController.createProduct);
-router.get("/getAllProducts", authenticateJWT, productController.getAllProduct);
-router.get("/:productId", authenticateJWT, productController.getProductById);
+router.get("/getAllProducts", productController.getAllProduct);
+router.get("/:productId", productController.getProductById);
 router.patch("/update/:productId", authenticateJWT, updateProductValidator, productController.updateProduct);
-router.delete("/delete", authenticateJWT, productController.deleteProduct);
+router.delete("/delete/:productId", authenticateJWT, productController.deleteProduct);
 
 
 export default router
