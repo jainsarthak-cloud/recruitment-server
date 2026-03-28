@@ -8,7 +8,7 @@ class IProductRepositry{
     async existedProduct(title) { 
          throw new Error("Method not implimented")
     }
-    async getAllProduct() {
+    async getAllProducts() {
          throw new Error("Method not implimented")
     }
     async deleteProduct(id) {
@@ -17,9 +17,6 @@ class IProductRepositry{
 
     async updateProduct(id, data) { 
          throw new Error("Method not implimented")
-    }
-    async deleteProduct(id) {
-        throw new Error("Method not implimented")
     }
 }
 export default IProductRepositry;

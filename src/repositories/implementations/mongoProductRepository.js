@@ -6,71 +6,58 @@ class mongoProductRepository extends IProductRepositry {
   async create(productData) {
     try {
       const newProduct = new Product(productData);
-      const savedProduct = await newProduct.save();
-      return savedProduct;
+    return await newProduct.save();
     } catch (error) {
-      throw new AppError("Failed to create Product ", 500, error);
+     throw new AppError(`Failed to create product: ${error.message}`, 500);
     }
   }
 
-  async existedProduct(title) {
+ async existedProduct(title) {
   try {
-    const existProduct = await Product.findOne({title});
-    return existProduct;
-
+    return await Product.findOne({ title });
   } catch (error) {
-    return null
+    throw new AppError("Database error while checking product", 500);
   }
 }
 
   async getProduct(id) {
   try {
-    const existProduct = await Product.findById(id);
-
-    if (!existProduct) {
-      throw new AppError("Product not found", 404);
-    }
-
-    return existProduct;
-
+  return await Product.findById(id);
   } catch (error) {
-    throw new AppError("Failed to find product", 500);
+    throw new AppError(`Failed to fetch product: ${error.message}`, 500);
   }
 }
-  async getAllProduct() {
+  async getAllProducts() {
     try {
-      let res = await Product.find();
-      if (res) return res;
+      return await Product.find();
+      
     } catch (error) {
-      throw new AppError("Failed to fetch Products", 500, error);
+     throw new AppError(`Failed to fetch product: ${error.message}`, 500);
     }
   }
 
   
   async updateProduct(id, data) {
     try {
-      const updatedProduct = await Product.findByIdAndUpdate(id,
-        { $set: data },
+      
+      return await Product.findByIdAndUpdate(id,data,
         {
           new: true,
          runValidators:true
        }
       )
-      return updatedProduct
     } catch (error) {
-      throw new AppError("Failed to update Product", 500, error);
+      throw new AppError(`Failed to update product: ${error.message}`, 500);
     }
   }
 
   async deleteProduct(id) {
     try {
-      const deletedProduct = await Product.findByIdAndDelete(id)
-      if (deletedProduct) return deletedProduct
-      
-      throw new AppError("Product not found", 404);
+     return await Product.findByIdAndDelete(id)
+     
     
     } catch (error) {
-       throw new AppError("Failed to delete Product", 500, error);
+     throw new AppError(`Failed to delete product: ${error.message}`, 500);
     }
   }
 }
