@@ -26,9 +26,7 @@ class MongoSavedCandidateRepository extends ISavedCandidateRepository {
         candidateId: candidateObjectId,
       });
     } catch (error) {
-      // Ye HTTP status code nahi hai ❌
-      // Ye MongoDB error code hai ✅
-      // 11000 = Duplicate Key Error
+     
       if (error.code === 11000) {
         throw new AppError("Candidate already bookmarked", 409);
       }

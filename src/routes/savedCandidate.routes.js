@@ -1,32 +1,38 @@
 import express from "express";
 import { authenticateJWT } from "../middlewares/auth.middleware.js";
+import { authorize } from "../middlewares/role.middleware.js";
 import savedCandidateController from "../controllers/savedCandidate.controller.js";
 
 const router = express.Router();
 
-router.use(authenticateJWT);
 
-// Route to save a candidate
-// POST /api/saved-candidates/:candidateId
-// Request body: None
-// Response: 201 Created with saved candidate details   
-//http://localhost:5000/api/saved-candidates/64b8c9f1e1d3c2a5f0a1b2c
-router.post("/:candidateId", savedCandidateController.saveCandidate);
-
-
-//http://localhost:5000/api/saved-candidates
-router.get("/", savedCandidateController.getSavedCandidates);
-
-// http://localhost:5000/api/saved-candidates/64b8c9f1e1d3c2a5f0a1b2c/status
-router.get(
-  "/:candidateId/status",
-   savedCandidateController.getSavedCandidateStatus
+router.post(
+  "/:candidateId",
+  authenticateJWT,
+  authorize("client"),
+  savedCandidateController.saveCandidate
 );
 
-//http://localhost:5000/api/saved-candidates/64b8c9f1e1d3c2a5f0a1b2c
+
+router.get(
+  "/",
+  authenticateJWT,
+  authorize("client"),
+  savedCandidateController.getSavedCandidates
+);
+
+router.get(
+  "/:candidateId/status",
+  authenticateJWT,
+  authorize("client"),
+  savedCandidateController.getSavedCandidateStatus
+);
+
 router.delete(
   "/:candidateId",
-   savedCandidateController.removeSavedCandidate
+  authenticateJWT,
+  authorize("client"),
+  savedCandidateController.removeSavedCandidate
 );
 
 export default router;
