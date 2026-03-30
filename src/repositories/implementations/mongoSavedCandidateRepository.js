@@ -30,9 +30,9 @@ class MongoSavedCandidateRepository extends ISavedCandidateRepository {
       if (error.code === 11000) {
         throw new AppError("Candidate already bookmarked", 409);
       }
-    //   “Agar error humara known hai → same bhej do
+    
       if (error instanceof AppError) throw error;
-    //   warna → naya generic error bana do”
+    
       throw new AppError("Unable to save candidate", 500);
     }
   }

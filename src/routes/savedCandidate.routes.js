@@ -5,34 +5,32 @@ import savedCandidateController from "../controllers/savedCandidate.controller.j
 
 const router = express.Router();
 
-
 router.post(
   "/:candidateId",
   authenticateJWT,
   authorize("client"),
-  savedCandidateController.saveCandidate
+  savedCandidateController.saveCandidate,
 );
-
 
 router.get(
   "/",
   authenticateJWT,
   authorize("client"),
-  savedCandidateController.getSavedCandidates
+  savedCandidateController.getSavedCandidates,
 );
 
 router.get(
   "/:candidateId/status",
   authenticateJWT,
   authorize("client"),
-  savedCandidateController.getSavedCandidateStatus
+  savedCandidateController.getSavedCandidateStatus,
 );
 
 router.delete(
   "/:candidateId",
   authenticateJWT,
   authorize("client"),
-  savedCandidateController.removeSavedCandidate
+  savedCandidateController.removeSavedCandidate,
 );
 
 export default router;
