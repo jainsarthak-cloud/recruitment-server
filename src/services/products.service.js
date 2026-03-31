@@ -32,11 +32,11 @@ class ProductService {
       return cached;
     }
 
-    const allData = await this.productRepository.getAllProducts(page, limit);
+    const products = await this.productRepository.getAllProducts(page, limit);
 
-    await this.cacheRepository.set(cacheKey, allData, 300);
+    await this.cacheRepository.set(cacheKey, products, 300);
 
-    return allData;
+    return products;
   }
 
   async getProductById(id) {

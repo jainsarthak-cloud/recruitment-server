@@ -29,7 +29,7 @@ class MongoProductRepository extends IProductRepository {
       //   const result = paginateAggregation(ProductsModel, [], { pate, limit });
 
       return {
-        data: products,
+        products,
         pagination: {
           total,
           page,

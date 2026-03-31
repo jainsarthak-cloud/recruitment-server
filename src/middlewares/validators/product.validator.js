@@ -34,7 +34,7 @@ export const createProductValidator = Joi.object({
     }),
 
     currency: Joi.string()
-      .valid("INR", "$") //
+      .valid("INR", "$") 
       .optional()
       .messages({
         "any.only": "Currency must be either INR or $",
