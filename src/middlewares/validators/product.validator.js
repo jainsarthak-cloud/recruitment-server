@@ -7,9 +7,6 @@ const productSchema = Joi.object({
         "string.max": "Title must be at most 10 character long",
         "any.required": "Title is required"
     }),
-    image: Joi.string().required().messages({
-        "any.required": "Image is required"
-    }),
     description: Joi.string().optional().trim().min(5).max(15),
     price: Joi.number().required().min(0).messages({
         "number.base": "Price must be a number",
@@ -25,18 +22,14 @@ const updateProductSchema = Joi.object({
     title: Joi.string().optional().trim().min(3).max(10).messages({
         "string.min": "Title must be at least 3 character long",
         "string.max": "Title must be at most 10 character long",
-        "any.required": "Title is required"
     }),
     description: Joi.string().optional().trim().min(5).max(15),
     price: Joi.number().optional().min(0).messages({
         "number.base": "Price must be a number",
-        "any.required": "Price is required",
         "number.min": "Price cannot be negative"
     }),
-    category: Joi.string().trim().optional().messages({
-        "any.required": "Category is required"
-    })
-});
+    category: Joi.string().trim().optional()
+}).min(1)
 
 const validate = (schema) => (req, res, next) => {
     const { error } = schema.validate(req.body, { abortEarly: false });

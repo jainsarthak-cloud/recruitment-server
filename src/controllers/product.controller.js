@@ -9,10 +9,13 @@ class ProductController {
 
     createProduct = async (req, res, next) => {
         try {
-            const productData = req.body;
+            const productData = { ...req.body };
+            if (typeof productData.price === "string") {
+                productData.price = Number(productData.price)
+            }
             const result = await this.productService.createProduct(productData);
 
-            res.status(201).json({ success: true, result })
+            res.status(201).json({ success: true, msg: "roduct created successfully", result })
         } catch (error) {
             next(error)
         }
@@ -21,7 +24,7 @@ class ProductController {
     getAllProduct = async (req, res, next) => {
         try {
             const result = await this.productService.getAllProducts();
-            res.status(200).json({ success: true, result })
+            res.status(200).json({ success: true, msg: "product fetched successfully", result })
         } catch (error) {
             next(error)
         }
@@ -36,7 +39,7 @@ class ProductController {
 
             const result = await this.productService.getProductById(productId);
 
-            res.status(200).json({ success: true, result })
+            res.status(200).json({ success: true, msg: "Product fetched successfully", result })
         } catch (error) {
             next(error)
         }
