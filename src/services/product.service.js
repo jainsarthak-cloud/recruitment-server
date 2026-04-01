@@ -8,8 +8,8 @@ class ProductService {
 
   async create(productData) {
     //findexisted product
-    const { title } = productData;
-    const existedProduct = await this.productRepository.existedProduct(title);
+    const { name } = productData;
+    const existedProduct = await this.productRepository.existedProduct(name);
 
     if (existedProduct) throw new AppError("Product already exists", 409);
     return await this.productRepository.create(productData);

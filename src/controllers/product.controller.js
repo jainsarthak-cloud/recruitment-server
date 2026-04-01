@@ -10,6 +10,7 @@ class ProductController {
   create = async (req, res, next) => {
     try {
       const productData = req.body;
+console.log(productData);
 
       const result = await this.productService.create(productData);
       res.status(201).json({
