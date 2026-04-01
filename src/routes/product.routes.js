@@ -5,9 +5,9 @@ import { createProductValidator, updateProductValidator } from "../middlewares/v
 const router = express.Router();
 
 
-router.post("/create", productController.create);
+router.post("/create",authenticateJWT,createProductValidator,productController.create);
 router.get("/:id",productController.getProduct)
 router.get("/", productController.getAllProducts);
-router.patch("/update/:id",productController.updateProduct);
-router.delete("/delete/:id",productController.deleteProduct);
+router.patch("/update/:id",authenticateJWT,updateProductValidator,productController.updateProduct);
+router.delete("/delete/:id",authenticateJWT,productController.deleteProduct);
 export default router;
