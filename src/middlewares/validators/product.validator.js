@@ -1,5 +1,5 @@
 import Joi from "joi";
-
+import { AppError } from "../../utils/errors.js"; // <--- ADD THIS LINE
 // We create a "Schema" - a blueprint of allowed data
  const createProductSchema = Joi.object({
     name: Joi.string().min(3).max(100).required().messages({
