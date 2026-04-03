@@ -7,7 +7,9 @@ class ProductController {
   }
 
   createProduct = asyncHandler(async (req, res) => {
-    const product = await this.productService.createProduct(req.body);
+    const reqData = req.body;
+
+    const product = await this.productService.createProduct(reqData);
 
     res.status(201).json({
       success: true,
@@ -17,7 +19,9 @@ class ProductController {
   });
 
   getProducts = asyncHandler(async (req, res) => {
-    const products = await this.productService.getAllProducts(req.query);
+    const reqData = req.body;
+
+    const products = await this.productService.getAllProducts(reqData);
 
     res.status(200).json({
       success: true,
@@ -26,7 +30,9 @@ class ProductController {
   });
 
   getProductById = asyncHandler(async (req, res) => {
-    const product = await this.productService.getProductById(req.params.id);
+    const reqParamsId = req.params.id;
+
+    const product = await this.productService.getProductById(reqParamsId);
 
     res.status(200).json({
       success: true,
@@ -35,9 +41,12 @@ class ProductController {
   });
 
   updateProduct = asyncHandler(async (req, res) => {
+    const reqData = req.body;
+    const reqParamsId = req.params.id;
+
     const updated = await this.productService.updateProduct(
-      req.params.id,
-      req.body
+      reqParamsId,
+      reqData,
     );
 
     res.status(200).json({
@@ -48,7 +57,9 @@ class ProductController {
   });
 
   deleteProduct = asyncHandler(async (req, res) => {
-    await this.productService.deleteProduct(req.params.id);
+    const reqParamsId = req.params.id;
+
+    await this.productService.deleteProduct(reqParamsId);
 
     res.status(200).json({
       success: true,

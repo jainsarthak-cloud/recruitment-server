@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+// af0dec5
 const productSchema = new mongoose.Schema({
     title: {
         type: String,
