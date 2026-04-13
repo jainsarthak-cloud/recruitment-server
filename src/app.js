@@ -38,6 +38,7 @@ import session from "express-session";
 import passport from "passport";              
 import "../src/config/passport.js";           
 import googleAuthRoutes from "./routes/googleAuth.routes.js";
+import githubAuthRoutes from "./routes/githubAuth.routes.js";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -92,6 +93,7 @@ app.use("/api/categories", categoryRoutes);
 
 app.use("/api/product", productRoutes);
 app.use("/api/auth", googleAuthRoutes);
+app.use("/api/auth", githubAuthRoutes);
 
 app.use(errorHandler);
 export default app;
