@@ -29,6 +29,8 @@ import jobApplicationQuesition from "./routes/jobApplicationQuesition.route.js";
 // import deleteTestsRoutes from "./routes/delete-tests.routes.js";
 import productRoutes from "./routes/product.routes.js";   // new route for products
 
+import adminProfileRoutes from "./routes/adminProfile.routes.js";
+
 import ViolationRoutes  from "./routes/testViolation.routes.js";
 import shareCandidate from "./routes/shareCandidate.routes.js";
 import tokenRoutes from "./routes/token.route.js"
@@ -52,6 +54,7 @@ app.use("/api/tests", testRoutes);
 app.use("/api/enrollments", testEnrollmentRoutes);
 app.use("/api/test-attempts", testAttemptRoutes);
 app.use('/api/candidate-profile', candidateProfileRoutes);
+app.use("/api/admin-profile", adminProfileRoutes);
 app.use('/api/aws' , awsRouter)
 app.use("/api/auth", resendMailRoutes);
 // app.use("/api/tests", deleteTestsRoutes);
