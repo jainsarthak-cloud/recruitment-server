@@ -5,7 +5,7 @@ export default {
   MONGO_URI: process.env.MONGO_URI,
   REDIS_PORT: process.env.REDIS_PORT,
   REDIS_PASSWORD: process.env.REDIS_PASSWORD,
-  REDIS_HOST: process.env.REDIS_HOST || 'localhost',
+  REDIS_HOST: process.env.REDIS_HOST || "localhost",
   JWT_SECRET: process.env.JWT_SECRET,
   PORT: process.env.PORT || 3000,
   ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS || "http://localhost:3000",
@@ -15,5 +15,8 @@ export default {
   GROQ_API_KEY: process.env.GROQ_API_KEY,
   ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
   NODE_ENV: process.env.NODE_ENV,
-  FRONTEND_URL:process.env.FRONTEND_URL
+  FRONTEND_URL: process.env.FRONTEND_URL,
+  VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY,
+  VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
+  VAPID_MAILTO: process.env.VAPID_MAILTO,
 };

@@ -12,8 +12,7 @@ class JobRoleController {
         createdBy: req.userId,
       };
 
-      const jobRole =
-        await this.jobRoleService.createJobRole(jobRoleData);
+      const jobRole = await this.jobRoleService.createJobRole(jobRoleData);
 
       res.status(201).json({
         success: true,
@@ -30,13 +29,12 @@ class JobRoleController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      const result =
-        await this.jobRoleService.getAllJobRoles(
-          req.query,
-          req.userId,
-          page,
-          limit
-        );
+      const result = await this.jobRoleService.getAllJobRoles(
+        req.query,
+        req.userId,
+        page,
+        limit,
+      );
 
       res.status(200).json({
         success: true,
@@ -50,11 +48,10 @@ class JobRoleController {
 
   getJobRoleById = async (req, res, next) => {
     try {
-      const jobRole =
-        await this.jobRoleService.getJobRoleById(
-          req.params.id,
-          req.userId
-        );
+      const jobRole = await this.jobRoleService.getJobRoleById(
+        req.params.id,
+        req.userId,
+      );
 
       res.status(200).json({
         success: true,
@@ -67,11 +64,10 @@ class JobRoleController {
 
   updateJobRole = async (req, res, next) => {
     try {
-      const jobRole =
-        await this.jobRoleService.updateJobRole(
-          req.params.id,
-          req.body
-        );
+      const jobRole = await this.jobRoleService.updateJobRole(
+        req.params.id,
+        req.body,
+      );
 
       res.status(200).json({
         success: true,
@@ -101,12 +97,11 @@ class JobRoleController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      const result =
-        await this.jobRoleService.getJobRolesByClient(
-          req.params.clientId,
-          page,
-          limit
-        );
+      const result = await this.jobRoleService.getJobRolesByClient(
+        req.params.clientId,
+        page,
+        limit,
+      );
 
       res.status(200).json({
         success: true,
@@ -123,13 +118,12 @@ class JobRoleController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      const result =
-        await this.jobRoleService.getJobRolesByCategory(
-          req.params.categoryId,
-          page,
-          limit,
-          req.userId
-        );
+      const result = await this.jobRoleService.getJobRolesByCategory(
+        req.params.categoryId,
+        page,
+        limit,
+        req.userId,
+      );
 
       res.status(200).json({
         success: true,
@@ -146,11 +140,7 @@ class JobRoleController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      const result =
-        await this.jobRoleService.getActiveJobRoles(
-          page,
-          limit
-        );
+      const result = await this.jobRoleService.getActiveJobRoles(page, limit);
 
       res.status(200).json({
         success: true,
@@ -167,11 +157,7 @@ class JobRoleController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      const result =
-        await this.jobRoleService.getExpiredJobRoles(
-          page,
-          limit
-        );
+      const result = await this.jobRoleService.getExpiredJobRoles(page, limit);
 
       res.status(200).json({
         success: true,
@@ -183,42 +169,40 @@ class JobRoleController {
     }
   };
 
-searchJobsJobRoles = async (req, res, next) => {
-  try {
-    let {
-      q = "",
-      location = "",
-      jobType,
-      experience,
-      minSalary,
-      maxSalary,
-      category,
-      page = 1,
-      limit = 10,
-    } = req.query;
+  searchJobsJobRoles = async (req, res, next) => {
+    try {
+      let {
+        q = "",
+        location = "",
+        jobType,
+        experience,
+        minSalary,
+        maxSalary,
+        category,
+        page = 1,
+        limit = 10,
+      } = req.query;
 
-    page = Math.max(1, Number(page) || 1);
-    limit = Math.max(1, Number(limit) || 10);
+      page = Math.max(1, Number(page) || 1);
+      limit = Math.max(1, Number(limit) || 10);
 
-    const jobTypeArray =
-      typeof jobType === "string"
-        ? jobType.split(",")
-        : Array.isArray(jobType)
-        ? jobType
-        : [];
+      const jobTypeArray =
+        typeof jobType === "string"
+          ? jobType.split(",")
+          : Array.isArray(jobType)
+            ? jobType
+            : [];
 
-    const experienceArray =
-      typeof experience === "string"
-        ? experience.split(",")
-        : Array.isArray(experience)
-        ? experience
-        : [];
+      const experienceArray =
+        typeof experience === "string"
+          ? experience.split(",")
+          : Array.isArray(experience)
+            ? experience
+            : [];
 
-    const cleanedExperienceArray =
-      experienceArray.filter(Boolean);
+      const cleanedExperienceArray = experienceArray.filter(Boolean);
 
-    const result =
-      await this.jobRoleService.searchJobRoles(
+      const result = await this.jobRoleService.searchJobRoles(
         q,
         location,
         jobTypeArray,
@@ -228,25 +212,23 @@ searchJobsJobRoles = async (req, res, next) => {
         category,
         page,
         limit,
-        req.userId
+        req.userId,
       );
 
-    res.status(200).json({
-      success: true,
-      data: result.data,
-      pagination: result.pagination,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
+      res.status(200).json({
+        success: true,
+        data: result.data,
+        pagination: result.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   /* 🔥 NEW: CATEGORY → JOB COUNT (Explore by Category) */
   getJobCountByCategory = async (req, res, next) => {
     try {
-      const data =
-        await this.jobRoleService.getJobCountByCategory();
+      const data = await this.jobRoleService.getJobCountByCategory();
 
       res.status(200).json({
         success: true,
