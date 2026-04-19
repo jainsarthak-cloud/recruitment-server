@@ -8,7 +8,6 @@ class PushSubscriptionController {
     this.unsubscribe = this.unsubscribe.bind(this);
   }
 
-  // POST /api/push/subscribe
   async subscribe(req, res, next) {
     console.log("req subscribe me aa rhi hai");
 
@@ -19,7 +18,6 @@ class PushSubscriptionController {
         return res.status(400).json({ error: "Invalid subscription object" });
       }
 
-      //   await this.subscriptionService.subscriptionRepository.save(subscription);
       await this.subscriptionService.subscribe(subscription);
 
       res.status(201).json({ message: "Subscribed successfully" });
@@ -29,7 +27,6 @@ class PushSubscriptionController {
     }
   }
 
-  // POST /api/push/unsubscribe
   async unsubscribe(req, res, next) {
     console.log("req un-subscribe me aa rhi hai");
 
@@ -40,7 +37,6 @@ class PushSubscriptionController {
         return res.status(400).json({ error: "Endpoint is required" });
       }
 
-      //   await this.subscriptionService.subscriptionRepository.delete(endpoint);
       await this.subscriptionService.unsubscribe(endpoint);
 
       res.status(200).json({ message: "Unsubscribed successfully" });
