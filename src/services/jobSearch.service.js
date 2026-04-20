@@ -1,4 +1,4 @@
-import MongoJobSearchRepository from "../repositories/implementations/MongoJobSearchRepository.js";
+import MongoJobSearchRepository from "../repositories/implementations/mongoJobSearchRepository.js";
 
 class JobSearchService {
   constructor() {
