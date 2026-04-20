@@ -35,45 +35,56 @@ class PushSubscriptionService {
     }
   }
 
-  async sendNotification(payload, options = {}) {
-    let allSubscriptions = await this.subscriptionRepository.findAll();
-
-    if (options.endpoints && options.endpoints.length > 0) {
-      const targetSet = new Set(options.endpoints);
-      allSubscriptions = allSubscriptions.filter((s) =>
-        targetSet.has(s.endpoint),
-      );
-    }
-
-    if (allSubscriptions.length === 0) {
+  async sendNotificationHelper(subscriptions, payload) {
+    if (subscriptions.length === 0) {
       console.log("No subscribers to notify.");
       return { sent: 0, failed: 0, total: 0 };
     }
 
     const results = await Promise.allSettled(
-      allSubscriptions.map((sub) => this.sendToSubscription(sub, payload)),
+      subscriptions.map((sub) => this.sendToSubscription(sub, payload)),
     );
 
     let sent = 0;
     let failed = 0;
 
     results.forEach((result) => {
-      if (result.status === "fulfilled" && result.value.success) {
-        sent++;
-      } else {
-        failed++;
-      }
+      if (result.status === "fulfilled" && result.value.success) sent++;
+      else failed++;
     });
 
-    console.log(
-      `Push batch complete — sent: ${sent}, failed: ${failed}, total: ${allSubscriptions.length}`,
-    );
-
-    return { sent, failed, total: allSubscriptions.length };
+    return { sent, failed, total: subscriptions.length };
   }
 
-  async subscribe(subscription) {
-    return await this.subscriptionRepository.save(subscription);
+  async sendNotification(payload, options = {}) {
+    let allSubscriptions = await this.subscriptionRepository.findAll();
+    console.log("sare subscriptions -> ", allSubscriptions);
+
+    if (options.endpoints) {
+      if (options.endpoints.length === 0) {
+        console.log("No endpoints → skipping notification");
+        return { sent: 0, failed: 0, total: 0 };
+      }
+
+      const targetSet = new Set(options.endpoints);
+
+      const allSubscriptions = await this.subscriptionRepository.findAll();
+
+      const filteredSubscriptions = allSubscriptions.filter((s) =>
+        targetSet.has(s.endpoint),
+      );
+
+      return await this.sendNotificationHelper(filteredSubscriptions, payload);
+    }
+
+    if (options.broadcast === true) {
+      const allSubscriptions = await this.subscriptionRepository.findAll();
+      return await this.sendNotificationHelper(allSubscriptions, payload);
+    }
+  }
+
+  async subscribe(subscription, userId) {
+    return await this.subscriptionRepository.save(subscription, userId);
   }
 
   async unsubscribe(endpoint) {

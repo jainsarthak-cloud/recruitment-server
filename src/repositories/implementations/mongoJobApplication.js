@@ -3,8 +3,15 @@ import { AppError } from "../../utils/errors.js";
 import IJobApplicationRepository from "../contracts/IJobApplicationRepository.js";
 import mongoose from "mongoose";
 import { paginateAggregation } from "../../utils/pagination.util.js";
+import MongoPushSubscriptionRepository from "./mongoPushSubscriptionRepository.js";
+import PushSubscriptionService from "../../services/pushSubscription.service.js";
 
 class MongoApplicationRespository extends IJobApplicationRepository {
+  constructor() {
+    super()
+  this.subscriptionRepository = new MongoPushSubscriptionRepository();
+  this.notificationService = new PushSubscriptionService();
+}
 
 
   async createJobApplication(jobAppData) {
@@ -111,6 +118,28 @@ class MongoApplicationRespository extends IJobApplicationRepository {
         {$set: {status}},
         {runValidators: true}
       );
+
+
+const applications = await jobAppModel.find({
+  _id: { $in: ObjectIds }
+});
+
+const userIds = [...new Set(applications.map(app => app.candidateId.toString()))];
+
+const subscriptions = await this.subscriptionRepository.findByUserIds(userIds);
+
+await this.notificationService.sendNotification(
+  {
+    title: "Application Update",
+    body: `Your application status is ${status}`
+  },
+  {
+    endpoints: subscriptions.map(sub => sub.endpoint)
+  }
+);
+
+
+
       if(result.matchedCount===0){
         throw new AppError("No application found for given IDs", 404)
       }

@@ -38,13 +38,18 @@ class JobRoleService {
 
     const job = await this.jobRoleRepository.createJobRole(jobRoleData);
 
-    await this.pushService.sendNotification({
-      title: "New Job Posted!",
-      body: `A new job has been posted: ${job.title || "(no title)"}`,
-      icon: "/icons/icon-192x192.png",
-      url: "/jobs",
-      data: { jobId: job._id, ...job },
-    });
+    await this.pushService.sendNotification(
+      {
+        title: "New Job Posted!",
+        body: `A new job has been posted: ${job.title || "(no title)"}`,
+        icon: "/icons/icon-192x192.png",
+        url: "/jobs",
+        data: { jobId: job._id, ...job },
+      },
+      {
+        broadcast: true,
+      },
+    );
 
     return job;
   }

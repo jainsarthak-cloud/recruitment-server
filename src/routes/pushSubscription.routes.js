@@ -4,7 +4,15 @@ import { authenticateJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/subscribe", pushSubscriptionController.subscribe);
-router.post("/unsubscribe", pushSubscriptionController.unsubscribe);
+router.post(
+  "/subscribe",
+  authenticateJWT,
+  pushSubscriptionController.subscribe,
+);
+router.post(
+  "/unsubscribe",
+  authenticateJWT,
+  pushSubscriptionController.unsubscribe,
+);
 
 export default router;

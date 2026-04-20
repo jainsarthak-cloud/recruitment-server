@@ -9,16 +9,15 @@ class PushSubscriptionController {
   }
 
   async subscribe(req, res, next) {
-    console.log("req subscribe me aa rhi hai");
-
     try {
       const subscription = req.body;
+      const userId = req.user.id
 
       if (!subscription || !subscription.endpoint) {
         return res.status(400).json({ error: "Invalid subscription object" });
       }
 
-      await this.subscriptionService.subscribe(subscription);
+      await this.subscriptionService.subscribe(subscription, userId);
 
       res.status(201).json({ message: "Subscribed successfully" });
     } catch (error) {
@@ -28,8 +27,6 @@ class PushSubscriptionController {
   }
 
   async unsubscribe(req, res, next) {
-    console.log("req un-subscribe me aa rhi hai");
-
     try {
       const { endpoint } = req.body;
 
