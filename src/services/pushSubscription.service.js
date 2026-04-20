@@ -8,14 +8,24 @@ class PushSubscriptionService {
 
   async sendToSubscription(subscription, payload) {
     try {
-      await webpush.sendNotification(subscription, JSON.stringify(payload), {
-        TTL: 86400, // 24 hours tk notification store hoga
-        vapidDetails: {
-          subject: process.env.VAPID_MAILTO,
-          publicKey: process.env.VAPID_PUBLIC_KEY,
-          privateKey: process.env.VAPID_PRIVATE_KEY,
+      await webpush.sendNotification(
+        {
+          endpoint: subscription.endpoint,
+          keys: {
+            p256dh: subscription.keys.p256dh,
+            auth: subscription.keys.auth,
+          },
         },
-      });
+        JSON.stringify(payload),
+        {
+          TTL: 86400, // 24 hours tk notification store hoga
+          vapidDetails: {
+            subject: process.env.VAPID_MAILTO,
+            publicKey: process.env.VAPID_PUBLIC_KEY,
+            privateKey: process.env.VAPID_PRIVATE_KEY,
+          },
+        },
+      );
       return { success: true, endpoint: subscription.endpoint };
     } catch (error) {
       if (error.statusCode === 410 || error.statusCode === 404) {
@@ -58,7 +68,6 @@ class PushSubscriptionService {
 
   async sendNotification(payload, options = {}) {
     let allSubscriptions = await this.subscriptionRepository.findAll();
-    console.log("sare subscriptions -> ", allSubscriptions);
 
     if (options.endpoints) {
       if (options.endpoints.length === 0) {
