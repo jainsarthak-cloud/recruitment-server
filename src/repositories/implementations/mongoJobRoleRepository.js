@@ -32,7 +32,6 @@ class MongoJobRoleRepository extends IJobRoleRepository {
             as: "applications",
           },
         },
-
         {
           $addFields: {
             applied: {
@@ -233,22 +232,10 @@ class MongoJobRoleRepository extends IJobRoleRepository {
         new: true,
         runValidators: true,
       }).populate([
-        {
-          path: "category",
-          select: "name",
-        },
-        {
-          path: "skills",
-          select: "name",
-        },
-        {
-          path: "createdBy",
-          select: "name email",
-        },
-        {
-          path: "clientId",
-          select: "name email company",
-        },
+        { path: "category", select: "name" },
+        { path: "skills", select: "name" },
+        { path: "createdBy", select: "name email" },
+        { path: "clientId", select: "name email company" },
       ]);
 
       if (!updatedJobRole) {
@@ -408,7 +395,7 @@ class MongoJobRoleRepository extends IJobRoleRepository {
         $or: [{ expiry: { $exists: false } }, { expiry: { $gte: now } }],
       });
 
-      // ✅ FIX: Keyword — special chars escape karo (.Net, C++, Node.js)
+      // Keyword — special chars escape
       if (q) {
         const escapedQ = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         matchStage.$and.push({
@@ -416,13 +403,15 @@ class MongoJobRoleRepository extends IJobRoleRepository {
         });
       }
 
-      // Location
+      // ✅ FIX: Location — "Mumbai, Maharashtra" → sirf "Mumbai" extract karo
       if (location) {
+        const cityOnly = location.split(",")[0].trim();
+        const escapedLocation = cityOnly.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         matchStage.$and.push({
           $or: [
-            { "location.city": { $regex: location, $options: "i" } },
-            { "location.state": { $regex: location, $options: "i" } },
-            { "location.country": { $regex: location, $options: "i" } },
+            { "location.city": { $regex: escapedLocation, $options: "i" } },
+            { "location.state": { $regex: escapedLocation, $options: "i" } },
+            { "location.country": { $regex: escapedLocation, $options: "i" } },
           ],
         });
       }
@@ -466,11 +455,9 @@ class MongoJobRoleRepository extends IJobRoleRepository {
             case "Entry":
               ranges.push({ requiredExperience: { $lte: 1 } });
               break;
-
             case "Mid":
               ranges.push({ requiredExperience: { $gte: 2, $lte: 4 } });
               break;
-
             case "Senior":
               ranges.push({ requiredExperience: { $gte: 5 } });
               break;
@@ -484,9 +471,6 @@ class MongoJobRoleRepository extends IJobRoleRepository {
 
       // Salary
       if (typeof minSalary === "number" && typeof maxSalary === "number") {
-        const upperLimit =
-          maxSalary === 99 ? Number.MAX_SAFE_INTEGER : maxSalary;
-
         matchStage.$and.push({
           salary: { $exists: true },
           "salary.min": { $gte: minSalary },
