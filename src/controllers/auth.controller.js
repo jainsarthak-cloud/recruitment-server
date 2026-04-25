@@ -21,8 +21,8 @@ class AuthController {
 
   refreshTokenController = async (req, res, next) => {
     try {
-      const refreshToken = req.cookies.refreshToken;
-      if (!refreshToken) throw new AppError("Unauthorized", 401);
+      // req.refreshToken is already validated by verifyRefreshToken middleware
+      const refreshToken = req.refreshToken;
 
       const tokens = await this.userService.refresh(refreshToken);
 
@@ -36,7 +36,10 @@ class AuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
 
-      res.status(200).json({ success: true });
+      res.status(200).json({
+        success: true,
+        message: "Token refreshed successfully",
+      });
     } catch (err) {
       next(err);
     }
@@ -47,7 +50,7 @@ class AuthController {
       const userData = req.body;
       const result = await this.userService.register(userData);
 
-      const isProd = process.env.NODE_ENV;
+      const isProd = process.env.NODE_ENV === "production";
 
       res.cookie("token", result.token, {
         ...this.cookieOptions,
@@ -79,7 +82,7 @@ class AuthController {
       const { email, password } = req.body;
       const result = await this.userService.login({ email, password });
 
-      const isProd = process.env.NODE_ENV;
+      const isProd = process.env.NODE_ENV === "production";
 
       res.cookie("token", result.token, {
         ...this.cookieOptions,
@@ -143,7 +146,7 @@ class AuthController {
 
       res.clearCookie("token", this.cookieOptions);
       res.clearCookie("refreshToken", this.cookieOptions);
-      res.clearCookie("role", {path: "/"})
+      res.clearCookie("role", { path: "/" });
 
       res
         .status(200)
