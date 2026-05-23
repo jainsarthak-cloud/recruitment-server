@@ -1,5 +1,5 @@
 import User from "../../models/StudentUser.model.js";
-import StudentUserRepositoryContract from "../contracts/studentUserRepository.js";
+import StudentUserRepositoryContract from "../contracts/IStudentUserRepository.js";
 
 class mongoStudentUserRepository extends StudentUserRepositoryContract {
     async createUser(userData) {
