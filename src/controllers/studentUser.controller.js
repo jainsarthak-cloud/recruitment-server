@@ -2,15 +2,17 @@ import StudentUserService from "../services/studentUser.service.js";
 
 class StudentUserController {
     async createUser(req, res, next) {
-        const user = await StudentUserService.createUser(req.body);
+        try {
+            const user = await StudentUserService.createUser(req.body);
 
-        res.status(201).json({
-            success: true,
-            message: "User created successfully",
-            data: user,
-        });
-    } catch(error) {
-        next(error);
+            res.status(201).json({
+                success: true,
+                message: "User created successfully",
+                data: user,
+            });
+        } catch (error) {
+            next(error);
+        }
     }
 
 

@@ -1,4 +1,4 @@
-import userRepository from "../repository/implementations/mongoStudentUserRepository.js";
+import userRepository from "../repositories/implementations/mongoStudentUserRepository.js";
 
 class StudentUserService {
     async createUser(userData) {
