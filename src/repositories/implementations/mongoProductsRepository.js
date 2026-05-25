@@ -15,14 +15,25 @@ class mongoProductRepository extends IProductsRepository {
         }
     }
 
-    async getAllProducts() {
+    async getAllProducts(productName) {
         try {
-            let products = await productModel.find()
+            let products = await productModel.find(productName)
             return products
         }
         catch (error) {
             console.log("error while fetching products", error)
             throw new AppError(`error while fetching products : ${error.message}`, 500, error)
+        }
+    }
+
+    async getSingleProduct() {
+        try {
+            let product = await productModel.findOne()
+            return product
+        }
+        catch (error) {
+            console.log("error while fetching product", error)
+            throw new AppError(`error while fetching product : ${error.message}`, 500, error)
         }
     }
 

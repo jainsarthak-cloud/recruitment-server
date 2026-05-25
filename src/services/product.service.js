@@ -9,7 +9,7 @@ class productService {
     }
 
     async createProduct(productData) {
-        let existingProduct = await productModel.findOne({ name: productData.name })
+        let existingProduct = await this.productrepository.getSingleProduct({ name: productData.name })
         if (existingProduct) {
             throw new AppError("Product with this name already exists", 400);
         }
