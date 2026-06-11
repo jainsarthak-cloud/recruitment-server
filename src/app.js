@@ -31,6 +31,9 @@ import jobApplicationQuesition from "./routes/jobApplicationQuesition.route.js";
 // import deleteTestsRoutes from "./routes/delete-tests.routes.js";
 
 import ViolationRoutes from "./routes/testViolation.routes.js";
+import adminProfileRoutes from "./routes/adminProfile.routes.js";
+
+import ViolationRoutes  from "./routes/testViolation.routes.js";
 import shareCandidate from "./routes/shareCandidate.routes.js";
 import tokenRoutes from "./routes/token.route.js"
 import categoryRoutes from "./routes/category.routes.js";
@@ -77,7 +80,6 @@ app.use("/api/token", tokenRoutes)
 
 
 app.use("/api/blogs", blogPostRoutes);
-app.use("/api", readerRoutes);
 
 
 app.use("/api/categories", categoryRoutes);
